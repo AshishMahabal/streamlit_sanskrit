@@ -7,8 +7,8 @@ st.sidebar.header('Noun tables')
 
 #labels = ["प्रथमा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","संबोधन"]
 vachanas = ['एक','द्वि','बहु']
-sup = ["सु","औ","जस्","अम्","औट्","शस्","टा",'भ्याम्','भिस्','ङे','भ्याम् ','भ्यस्',
-    'ङसि','भ्याम्  ','भ्यस् ','ङस्','ओस्','आम्','ङि','ओस् ','सुप्',"सु ","औ ","जस् "]
+sup = ["सु","औ","जस्","सु ","औ ","जस् ","अम्","औट्","शस्","टा",'भ्याम्','भिस्','ङे','भ्याम् ','भ्यस्',
+    'ङसि','भ्याम्  ','भ्यस् ','ङस्','ओस्','आम् ','ङि','ओस् ','सुप्']
 
 tests = {}
 tests['rAma'] = 'रामः#रामौ#रामाः#हे राम#हे रामौ#हे रामाः#रामम्#रामौ#रामान्#रामेण#रामाभ्याम्#रामैः#\
@@ -23,9 +23,10 @@ tests['bAlaka'] = 'बालकः#बालकौ#बालकाः#हे ब
 बालकाय#बालकाभ्याम्#बालकेभ्यः#बालकात्#बालकाभ्याम्#बालकेभ्यः#बालकस्य#बालकयोः#बालकानाम्#बालके#बालकयोः#बालकेषु'
 tests['guru'] = 'गुरुः#गुरू#गुरवः#हे गुरो#हे गुरू#हे गुरवः#गुरुम्#गुरू#गुरून्#गुरुणा#गुरुभ्याम्#गुरुभिः#गुरवे#गुरुभ्याम्#गुरुभ्यः#\
 गुरोः#गुरुभ्याम्#गुरुभ्यः#गुरोः#गुर्वोः#गुरूणाम्#गुरौ#गुर्वोः#गुरुषु'
+tests['nadI'] = 'नदी#नद्यौ#नद्यः#हे नदि#हे नद्यौ#हे नद्यः#नदीम्#नद्यौ#नदीः#नद्या#नदीभ्याम्#नदीभिः#नद्यै#नदीभ्याम्#नदीभ्यः#\
+नद्याः#नदीभ्याम्#नदीभ्यः#नद्याः#नद्योः#नदीनाम्#नद्याम्#नद्योः#नदीषु'
 
 labels = ["प्रथमा","संबोधन","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी"]
-
 
 linga = {
         'rAma':'puM',
@@ -33,7 +34,7 @@ linga = {
         'phala':'napuMsaka',
         'ramA':'strI',
         'hari':'puM',
-        'nadi':'strI',
+        'nadI':'strI',
         'guru':'puM',
 #        'dhenu':'strI',
 #        'madhu':'napuMsaka',
@@ -55,7 +56,7 @@ def nountable(noun='rAma',linga='puM'):
     df = pd.DataFrame([],columns=['',transliterate('ekavachana'), 
             transliterate('dvivachana'), transliterate('bahuvachana')])
     
-    for vib in range(8):
+    for vib in [0,7,1,2,3,4,5,6]:
         row = []
         row.append(transliterate(vibhaktis[vib]))
         for vachana in range(3):
@@ -77,37 +78,37 @@ if st.sidebar.checkbox('Create nountable data'):
     st.write("tests['",noun,"'] = ")
     st.write('#'.join([j for i in df.iloc[:,[1,2,3]].values.tolist() for j in i]))
 
-if st.sidebar.checkbox('Quiz nountable'):
-    st.write("Please complete the following for ",noun)
-    vibhaktis = []
-    for i in range(8):
-        cols = st.beta_columns(4)
-        vibhaktis.append(cols[0].write(labels[i]))
-        for j in range(3):
-            vibhaktis.append(cols[j+1].text_input(sup[i*3+j],""))
+# if st.sidebar.checkbox('Quiz nountable'):
+#     st.write("Please complete the following for ",noun)
+#     vibhaktis = []
+#     for i in range(8):
+#         cols = st.beta_columns(4)
+#         vibhaktis.append(cols[0].write(labels[i]))
+#         for j in range(3):
+#             vibhaktis.append(cols[j+1].text_input(sup[i*3+j],""))
 
-    cvibhaktis = tests[noun].split('#')
-    #cvibhaktis = list(map(lambda it: it.strip(), cvibhaktis))
-    cvibhaktis = [item.strip() for item in cvibhaktis]
+#     cvibhaktis = tests[noun].split('#')
+#     #cvibhaktis = list(map(lambda it: it.strip(), cvibhaktis))
+#     cvibhaktis = [item.strip() for item in cvibhaktis]
 
-    for i in range(len(labels)):
-        for j in range(len(vachanas)):
-            if cvibhaktis[i*4+j+1] != vibhaktis[i*4+j+1].strip():
-                st.write("Mismatch in ",labels[i],vachanas[j])
+#     for i in range(len(labels)):
+#         for j in range(len(vachanas)):
+#             if cvibhaktis[i*4+j+1] != vibhaktis[i*4+j+1].strip():
+#                 st.write("Mismatch in ",labels[i],vachanas[j])
 
-if st.sidebar.checkbox('Debug'):
-    for i in range(len(labels)):
-        for j in range(len(vachanas)):
-            if cvibhaktis[i*4+j+1] != vibhaktis[i*4+j+1].strip():
-                st.write("Mismatch in ",labels[i], vachanas[j],
-                " actual: ",cvibhaktis[i*4+j+1], " user: ", vibhaktis[i*4+j+1],)
+# if st.sidebar.checkbox('Debug'):
+#     for i in range(len(labels)):
+#         for j in range(len(vachanas)):
+#             if cvibhaktis[i*4+j+1] != vibhaktis[i*4+j+1].strip():
+#                 st.write("Mismatch in ",labels[i], vachanas[j],
+#                 " actual: ",cvibhaktis[i*4+j+1], " user: ", vibhaktis[i*4+j+1],)
 
-if st.sidebar.checkbox('Debug2'):
-    for i in range(len(labels)):
-        for j in range(len(vachanas)):
-            if cvibhaktis[i*4+j+1] != vibhaktis[i*4+j+1].strip():
-                st.write("Mismatch in ",labels[i], vachanas[j],
-                " actual: ",cvibhaktis[i*4+j+1].encode(), " user: ", vibhaktis[i*4+j+1].encode())
+# if st.sidebar.checkbox('Debug2'):
+#     for i in range(len(labels)):
+#         for j in range(len(vachanas)):
+#             if cvibhaktis[i*4+j+1] != vibhaktis[i*4+j+1].strip():
+#                 st.write("Mismatch in ",labels[i], vachanas[j],
+#                 " actual: ",cvibhaktis[i*4+j+1].encode(), " user: ", vibhaktis[i*4+j+1].encode())
 
 if st.sidebar.checkbox('Quiz nountable debug'):
     st.write("Please complete the following for ",noun)
