@@ -115,7 +115,7 @@ emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':s
 
 copts = []
 opts = st.beta_columns(3)
-copts.append(opts[0].checkbox('Intro',value='True'))
+copts.append(opts[0].checkbox('Notes',value='True'))
 copts.append(opts[1].checkbox('Quiz'))
 copts.append(opts[2].checkbox('Show'))
 #copts.append(opts[3].selectbox('Select noun1',devnouns))
@@ -154,7 +154,7 @@ if copts[0]:
     features. Currently for the forms you get right, you will see emojis displayed\
     near those forms.")
     st.write("Conjuncts do not show up well on Safari.")
-    st.write("In devnagari mode, use H for halant sign.")
+    st.write("In devnagari mode, use H for visarga sign.")
 
 if copts[1]:
     st.subheader('Noun quiz')
