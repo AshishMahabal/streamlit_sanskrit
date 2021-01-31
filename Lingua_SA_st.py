@@ -5,7 +5,10 @@ import random
 import numpy as np
 
 st.title('Let us do some Sanskrit')
-st.sidebar.header('Noun tables')
+
+
+
+#st.sidebar.header('Noun tables')
 
 #labels = ["प्रथमा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","संबोधन"]
 vachanas = ['एक','द्वि','बहु']
@@ -70,12 +73,7 @@ devnouns = list(nounlinga.keys())
 def showdev(roman):
     return st.markdown(transliterate(roman))
 
-devnoun = st.sidebar.selectbox(
-    'Select noun',
-    devnouns,)
-    #format_func=showdev)
 
-noun = nounlinga[devnoun]
 
 def nountable(noun='rAma',linga='puM'):
     vibhaktis = ['prathamA','dvitIyA','tRtIyA','chaturthI','paMchamI','ShaShThI','saptamI','sMbodhana']
@@ -113,25 +111,49 @@ def nounlisttable(devnoun='राम (पु)'):
 #     df.set_index('', inplace=True)
 #     st.write(df.to_markdown())
 
-if st.sidebar.checkbox('Show nountable from list'):
-    # We should get noun and linga here that way we can type
-    # and not rely on the drop down list
-    st.subheader('Nountable')
-    #st.write(transliterate(noun), transliterate(linga[noun]))
-    st.write(devnoun)
-    df = nounlisttable(devnoun)
-    #df.set_index('', inplace=True)
-    st.write(df.to_markdown())
-
-# if st.sidebar.checkbox('Create nountable data'):
-#     st.subheader('')
-#     df = nountable(noun,linga[noun])
-#     nlist = '#'.join([j for i in df.iloc[:,[1,2,3]].values.tolist() for j in i])
-#     st.write("nouns['",devnoun,"'] = '",nlist,"'",sep='',end='')
-
 emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':star:',':musical_note:']
 
-if st.sidebar.checkbox('Quiz nountable debug'):
+copts = []
+opts = st.beta_columns(3)
+copts.append(opts[0].checkbox('Intro'))
+copts.append(opts[1].checkbox('Quiz'))
+copts.append(opts[2].checkbox('Show'))
+#copts.append(opts[3].selectbox('Select noun1',devnouns))
+
+# st.write(copts)
+
+# if copts[0]:
+#     intro = 1
+# else:
+#     intro = 0
+
+# #if st.sidebar.checkbox('Quiz nountable'):
+# if st.checkbox('Quiz'):
+#     quiz = 1
+# else:
+#     quiz = 0
+
+# #if st.sidebar.checkbox('Show nountable from list'):
+# if st.checkbox('Show'):
+#     show = 1
+# else: show = 0
+
+#devnoun = st.sidebar.selectbox(
+devnoun = st.selectbox(
+    'Select noun',
+    devnouns,)
+    #format_func=showdev)
+
+noun = nounlinga[devnoun]
+
+if copts[0]:
+    st.write("For the set of nouns in the drop down menu, you can see their forms\
+    and/or quiz yourself about them. I created these especially to ensure I get the\
+    hrasv/dirgha and halant correct for various nouns. I will add more nouns, and\
+    features. Currently for the forms you get right, you will see emojis displayed\
+    near those forms.")
+
+if copts[1]:
     st.subheader('Noun quiz')
     st.write("Please complete the following for ",devnoun)
     
@@ -160,3 +182,18 @@ if st.sidebar.checkbox('Quiz nountable debug'):
     if corrects == 24:
         st.write(':sunglasses:')
     
+if copts[2]:
+    # We should get noun and linga here that way we can type
+    # and not rely on the drop down list
+    st.subheader('Nountable')
+    #st.write(transliterate(noun), transliterate(linga[noun]))
+    st.write(devnoun)
+    df = nounlisttable(devnoun)
+    #df.set_index('', inplace=True)
+    st.write(df.to_markdown())
+
+# if st.sidebar.checkbox('Create nountable data'):
+#     st.subheader('')
+#     df = nountable(noun,linga[noun])
+#     nlist = '#'.join([j for i in df.iloc[:,[1,2,3]].values.tolist() for j in i])
+#     st.write("nouns['",devnoun,"'] = '",nlist,"'",sep='',end='')
