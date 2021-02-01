@@ -35,22 +35,28 @@ nouns['युष्मद् (त्रि)'] = 'त्वम्#युवाम
 nouns['अस्मद् (त्रि)'] = 'अहम्#आवाम्#वयम्####माम्/मा#आवाम्/नौ#अस्मान्/नः#मया#आवाभ्याम्#अस्माभिः#मह्यम्/मे#आवाभ्याम्/नौ#अस्माभ्यम्/नः#\
 मत्#आव्याभ्याम्#अस्मत्#मम/मे#आवयोः/नौ#अस्माकम्/नः#मयि#आवयोः#अस्मासु'
 
+sarvanouns = {}
+sarvanouns['युष्मद् (त्रि)'] = 'त्वम्#युवाम्#यूयम्####त्वाम्#युवाम्#युष्मान्#त्वया#युवाभ्याम्#युष्माभिः#तुभ्यम्#युवाभ्याम्#युष्मभ्यम्#\
+त्वत्#युवाभ्याम्#युष्मत्#तव#युवयोः#युष्माकम्#त्वयि#युवयोः#युष्मासु'
+sarvanouns['अस्मद् (त्रि)'] = 'अहम्#आवाम्#वयम्####माम्/मा#आवाम्/नौ#अस्मान्/नः#मया#आवाभ्याम्#अस्माभिः#मह्यम्/मे#आवाभ्याम्/नौ#अस्माभ्यम्/नः#\
+मत्#आव्याभ्याम्#अस्मत्#मम/मे#आवयोः/नौ#अस्माकम्/नः#मयि#आवयोः#अस्मासु'
+
 labels = ["प्रथमा","संबोधन","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी"]
 
-linga = { # Combine this with nounlinga
-        'rAma':'puM',
-        'bAlaka':'puM',
-        'phala':'napuMsaka',
-        'ramA':'strI',
-        'hari':'puM',
-        'nadI':'strI',
-        'guru':'puM',
-        'yuSmad':'tri',
-        'asfmad':'tri',
-#        'dhenu':'strI',
-#        'madhu':'napuMsaka',
-#        'dAtR': 'puM',
-        }
+# linga = { # Combine this with nounlinga
+#         'rAma':'puM',
+#         'bAlaka':'puM',
+#         'phala':'napuMsaka',
+#         'ramA':'strI',
+#         'hari':'puM',
+#         'nadI':'strI',
+#         'guru':'puM',
+#         'yuSmad':'tri',
+#         'asfmad':'tri',
+# #        'dhenu':'strI',
+# #        'madhu':'napuMsaka',
+# #        'dAtR': 'puM',
+#         }
 
 nounlinga = {
         'राम (पु)': 'rAma',
@@ -67,13 +73,18 @@ nounlinga = {
 #        'dAtR': 'puM',
         }
 
+sarvanounlinga = {
+        '':'',
+        'युष्मद् (त्रि)':'yuSmad',
+        'अस्मद् (त्रि)':'wsfmad',
+        }
+
 devnouns = list(nounlinga.keys())
+sarvadevnouns = list(sarvanounlinga.keys())
 #nouns = ['rAma','phala','ramA','hari','guru','dhenu','madhu']
 
 def showdev(roman):
     return st.markdown(transliterate(roman))
-
-
 
 def nountable(noun='rAma',linga='puM'):
     vibhaktis = ['prathamA','dvitIyA','tRtIyA','chaturthI','paMchamI','ShaShThI','saptamI','sMbodhana']
@@ -97,6 +108,29 @@ def nounlisttable(devnoun='राम (पु)'):
     #st.write(tdata)
     df = pd.DataFrame(tdata,columns=[transliterate('ekavachana'), 
             transliterate('dvivachana'), transliterate('bahuvachana')])
+    df[transliterate("vibhakti")] = [transliterate(i) for i in vibhaktis]
+    df = df.set_index(transliterate("vibhakti"))
+    #st.write(len(vibhaktis))
+    #st.write(df.to_markdown())
+    return df
+
+def nounlisttable2(devnouns=['अस्मद् (त्रि)','राम (पु)']):
+    vibhaktis = ['prathamA','sMbodhana', 'dvitIyA','tRtIyA','chaturthI','paMchamI','ShaShThI','saptamI']
+    if len(devnouns)==1:
+        tdata = np.reshape(nouns[devnouns[0]].split('#'), (8,3))
+        #st.write(tdata)
+        df = pd.DataFrame(tdata,columns=[transliterate('ekavachana'), 
+            transliterate('dvivachana'), transliterate('bahuvachana')])
+    if len(devnouns)==2:
+        tdata1 = np.reshape(nouns[devnouns[0]].split('#'), (8,3))
+        #st.write(tdata)
+        df1 = pd.DataFrame(tdata1,columns=[transliterate('ekavachana'), 
+            transliterate('dvivachana'), transliterate('bahuvachana')])
+        tdata2 = np.reshape(nouns[devnouns[1]].split('#'), (8,3))
+        #st.write(tdata)
+        df2 = pd.DataFrame(tdata2,columns=[transliterate('ekavachana'), 
+            transliterate('dvivachana'), transliterate('bahuvachana')])
+        df = df1.combine(df2, lambda x, y: x + ' ' + y)
     df[transliterate("vibhakti")] = [transliterate(i) for i in vibhaktis]
     df = df.set_index(transliterate("vibhakti"))
     #st.write(len(vibhaktis))
@@ -139,10 +173,17 @@ copts.append(opts[2].checkbox('Show'))
 # else: show = 0
 
 #devnoun = st.sidebar.selectbox(
+
+sarvadevnoun = st.selectbox(
+    'Select sarvanaam',
+    sarvadevnouns,)
+    #format_func=showdev)
+
 devnoun = st.selectbox(
     'Select noun',
     devnouns,)
     #format_func=showdev)
+
 
 noun = nounlinga[devnoun]
 
@@ -190,8 +231,12 @@ if copts[2]:
     # and not rely on the drop down list
     st.subheader('Nountable')
     #st.write(transliterate(noun), transliterate(linga[noun]))
-    st.write(devnoun)
-    df = nounlisttable(devnoun)
+    if len(sarvadevnoun)>0:
+        st.write(sarvadevnoun+ ' ' + devnoun)
+        df = nounlisttable2(devnouns=[sarvadevnoun,devnoun])
+    else:
+        st.write(devnoun)
+        df = nounlisttable(devnoun)
     #df.set_index('', inplace=True)
     st.write(df.to_markdown())
 
@@ -200,3 +245,7 @@ if copts[2]:
 #     df = nountable(noun,linga[noun])
 #     nlist = '#'.join([j for i in df.iloc[:,[1,2,3]].values.tolist() for j in i])
 #     st.write("nouns['",devnoun,"'] = '",nlist,"'",sep='',end='')
+
+#st.write(nounlisttable2(devnouns=['अस्मद् (त्रि)','राम (पु)']).to_markdown())
+
+#st.write(nounlisttable2(devnouns=['राम (पु)']).to_markdown())
