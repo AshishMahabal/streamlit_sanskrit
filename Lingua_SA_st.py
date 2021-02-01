@@ -174,10 +174,11 @@ copts.append(opts[2].checkbox('Show'))
 
 #devnoun = st.sidebar.selectbox(
 
-sarvadevnoun = st.selectbox(
-    'Select sarvanaam',
-    sarvadevnouns,)
-    #format_func=showdev)
+if copts[2]:
+    sarvadevnoun = st.selectbox(
+        'Select sarvanaam',
+        sarvadevnouns,)
+        #format_func=showdev)
 
 devnoun = st.selectbox(
     'Select noun',
