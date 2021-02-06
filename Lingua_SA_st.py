@@ -50,52 +50,9 @@ sarvanouns['तद् (न)'] = nouns['तद् (न)']
 
 labels = ["प्रथमा","संबोधन","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी"]
 
-# linga = { # Combine this with nounlinga
-#         'rAma':'puM',
-#         'bAlaka':'puM',
-#         'phala':'napuMsaka',
-#         'ramA':'strI',
-#         'hari':'puM',
-#         'nadI':'strI',
-#         'guru':'puM',
-#         'yuSmad':'tri',
-#         'asfmad':'tri',
-# #        'dhenu':'strI',
-# #        'madhu':'napuMsaka',
-# #        'dAtR': 'puM',
-#         }
 
-nounlinga = {
-        'राम (पु)': 'rAma',
-        'बालक (पु)': 'bAlaka',
-        'फल (न)': 'phala',
-        'रमा (स्त्री)':'ramA',
-        'हरि (पु)':'hari',
-        'नदी (स्त्री)':'nadI',
-        'गुरु (पु)':'guru',
-        'पितृ (पु)':'pitR',
-        'युष्मद् (त्रि)':'yuSmad',
-        'अस्मद् (त्रि)':'wsfmad',
-        'तद् (पु)':'tad',
-        'तद् (स्त्री)':'tad',
-        'तद् (न)':'tad',
-#        'dhenu':'strI',
-#        'madhu':'napuMsaka',
-#        'dAtR': 'puM',
-        }
-
-sarvanounlinga = {
-        '':'',
-        'युष्मद् (त्रि)':'yuSmad',
-        'अस्मद् (त्रि)':'wsfmad',
-        'तद् (पु)':'tad',
-        'तद् (स्त्री)':'tad',
-        'तद् (न)':'tad',
-        }
-
-devnouns = list(nounlinga.keys())
-sarvadevnouns = list(sarvanounlinga.keys())
-#nouns = ['rAma','phala','ramA','hari','guru','dhenu','madhu']
+devnouns = list(nouns.keys())
+sarvadevnouns = list(sarvanouns.keys())
 
 def showdev(roman):
     return st.markdown(transliterate(roman))
@@ -151,13 +108,7 @@ def nounlisttable2(devnouns=['अस्मद् (त्रि)','राम (प
     #st.write(df.to_markdown())
     return df
 
-# if st.sidebar.checkbox('Show nountable from prog'):
-#     st.subheader('Nountable')
-#     st.write(transliterate(noun), transliterate(linga[noun]))
-#     st.write(devnoun)
-#     df = nountable(noun,linga[noun])
-#     df.set_index('', inplace=True)
-#     st.write(df.to_markdown())
+
 
 emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':star:',':musical_note:']
 
@@ -168,25 +119,7 @@ copts.append(opts[1].checkbox('Quiz'))
 copts.append(opts[2].checkbox('Show'))
 #copts.append(opts[3].selectbox('Select noun1',devnouns))
 
-# st.write(copts)
 
-# if copts[0]:
-#     intro = 1
-# else:
-#     intro = 0
-
-# #if st.sidebar.checkbox('Quiz nountable'):
-# if st.checkbox('Quiz'):
-#     quiz = 1
-# else:
-#     quiz = 0
-
-# #if st.sidebar.checkbox('Show nountable from list'):
-# if st.checkbox('Show'):
-#     show = 1
-# else: show = 0
-
-#devnoun = st.sidebar.selectbox(
 
 if copts[2]:
     sarvadevnoun = st.selectbox(
@@ -200,7 +133,6 @@ devnoun = st.selectbox(
     #format_func=showdev)
 
 
-noun = nounlinga[devnoun]
 
 if copts[0]:
     st.subheader("Notes:")
@@ -255,15 +187,6 @@ if copts[2]: # show
     #df.set_index('', inplace=True)
     st.write(df.to_markdown())
 
-# if st.sidebar.checkbox('Create nountable data'):
-#     st.subheader('')
-#     df = nountable(noun,linga[noun])
-#     nlist = '#'.join([j for i in df.iloc[:,[1,2,3]].values.tolist() for j in i])
-#     st.write("nouns['",devnoun,"'] = '",nlist,"'",sep='',end='')
-
-#st.write(nounlisttable2(devnouns=['अस्मद् (त्रि)','राम (पु)']).to_markdown())
-
-#st.write(nounlisttable2(devnouns=['राम (पु)']).to_markdown())
 
 # #os.system("gtts-cli -l hi 'नमस्ते महोदय' | ffmpeg -i pipe:0 -f wav pipe:1 | ~/Downloads/sox-14.4.2/play -t wav -")
 # audiostr = "gtts-cli -l hi --slow '%s' | ffmpeg -i pipe:0 -f wav pipe:1 | ~/Downloads/sox-14.4.2/play -t wav -" % nouns[devnoun]
