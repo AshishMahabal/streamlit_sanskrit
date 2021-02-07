@@ -10,7 +10,9 @@ st.title('Let us do some Sanskrit (Verbs)')
 
 vachanas = ['एक','द्वि','बहु']
 # these elements need to be distinct. Use this later for vikaran and purush pratya.
-तिङ् = ['', ' ','  ','   ','    ','     ','      ','       ','        '] 
+तिङ् = {} # तिप्‍तस्‍झिसिप्‍थस्‍थमिब्‍वस्‍मस्‍ताताञ्झथासाथाम्‍ध्‍वमिड्वहिमहिङ्
+तिङ्['परस्मै'] = "तिप्#तस्#झि#सिप्#थस्#थ#मिप्#वस्#मस्".split('#')
+तिङ्['आत्मने'] = "त#आताम्#झ#थास्#आथाम्#ध्वम्#इट्#वहि#महिङ्".split('#')
 
 purush = ['प्रथम','मध्यम','उत्तम']
 
@@ -48,6 +50,7 @@ vopts.append(sopts[1].selectbox('Select pada',verbs[verb]['pada']))
 pada = vopts[1]
 vopts.append(sopts[2].selectbox('Select pada',list(verbs[verb][pada].keys())))
 lakaara = vopts[2]
+गण = verbs[verb]['गण']
 
 #st.write('Curent selections: ',verb,pada,lakaara)
 
@@ -61,7 +64,7 @@ if copts[0]:
 
 if copts[1]: # quiz
     st.subheader('Verb quiz')
-    st.write("Please complete the following for ",verb,'धातु ',pada,'पद ',lakaara,'लकार')
+    st.write("Please complete the following for ",verb,'धातु (गण ',गण,') ',pada,'पद ',lakaara,'लकार')
     
     #st.write(verbs[verb])
     #st.write(verb)
@@ -74,7 +77,7 @@ if copts[1]: # quiz
         cols = st.beta_columns(7)
         purushas.append(cols[0].write(purush[i]))
         for j in range(3):
-            purushas.append(cols[j*2+1].text_input(तिङ्[i*3+j],""))
+            purushas.append(cols[j*2+1].text_input(तिङ्[pada][i*3+j],""))
             lab = str(i*3+j+1)
             if cpurushas[i*3+j] != purushas[i*7+j*2+1].strip():
                 purushas.append(cols[j*2+2].write(''))
@@ -93,7 +96,7 @@ if copts[2]: # show
     # We should get noun and linga here that way we can type
     # and not rely on the drop down list
     st.subheader('Verbtable')
-    st.write(verb,pada,lakaara,' selected')
+    st.write(verb,' धातु (गण ',गण,') ',pada,'पद ',lakaara,'लकार selected')
     df = verblisttable(verb,pada,lakaara)
     st.write(df.to_markdown())
 
