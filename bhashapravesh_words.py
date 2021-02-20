@@ -3,6 +3,7 @@ import json
 import os
 
 def getKeysByValue(dictOfElements, valueToFind):
+    st.write(len(dictOfElements))
     listOfKeys = list()
     listOfItems = dictOfElements.items()
     for item  in listOfItems:
@@ -11,14 +12,16 @@ def getKeysByValue(dictOfElements, valueToFind):
     return  listOfKeys
 
 if os.path.exists('chapter1.words.classified'):
+    #st.write('exists')
     with open('chapter1.words.classified', 'r') as file:
-        cdict = sorted(json.loads(file.read()))
+        cdict = json.loads(file.read())
+        #st.write(cdict)
 else:
     with open('chapter1.words', 'r') as file:
         cwords = sorted(json.loads(file.read()))
     cdict = {}
     for word in cwords:
-        cdict[word] = ' '
+        cdict[word] = 'Unclassified'
 
 st.title("Sorting words")
 st.sidebar.title("Word types")
@@ -31,19 +34,18 @@ toDisplay = st.sidebar.radio(
 )
 
 if toDisplay == "Unclassified":
-    unc = getKeysByValue(cdict, ' ')
-    uncup = []
-    rows = len(unc)//4
-    for i in range(rows):
-        cols = st.beta_columns(8)
-        for j in range(4):
-            n = i*4+j
-            cols[j*2].write(unc[n])
-            uncup.append(cols[j*2+1].selectbox(str(n),dispOpts))
-            cdict[unc[n]] = uncup[len(uncup)-1]
+    #st.write(cdict)
+    unc = getKeysByValue(cdict, 'Unclassified')
+    #uncup = []
+    for i in range(len(unc)):
+        st.write(unc[i])
+        chosen = st.selectbox(str(i),dispOpts)
+        cdict[unc[i]] = chosen
             #cols[j*2+1].write(n)
 
-    st.write(i,getKeysByValue(cdict, 'धातवः'))	
+    st.write(i,getKeysByValue(cdict, 'धातवः'))
+    with open('chapter1.words.classified', 'w') as fp:
+        json.dump(cdict, fp)
 elif toDisplay == "धातवः":
     धातु = getKeysByValue(cdict, 'धातवः')
     st.write(धातु)
