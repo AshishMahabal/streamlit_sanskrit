@@ -3,7 +3,7 @@ import json
 import os
 
 def getKeysByValue(dictOfElements, valueToFind):
-    st.write(len(dictOfElements))
+    #st.write(len(dictOfElements))
     listOfKeys = list()
     listOfItems = dictOfElements.items()
     for item  in listOfItems:
@@ -37,15 +37,25 @@ if toDisplay == "Unclassified":
     #st.write(cdict)
     unc = getKeysByValue(cdict, 'Unclassified')
     #uncup = []
-    for i in range(len(unc)):
-        st.write(unc[i])
-        chosen = st.selectbox(str(i),dispOpts)
-        cdict[unc[i]] = chosen
+    i=0
+    for key in unc:
+        i+=1
+        topts = dispOpts.copy()
+        # cols = st.beta_columns(2)
+        # cols[0].write(key)
+        # chosen = cols[1].selectbox(str(i),dispOpts)
+        topts.insert(0,key)
+        st.write(key)
+        chosen = st.selectbox(str(i),topts)
+        if chosen != key:
+            cdict[key] = chosen
+            with open('chapter1.words.classified', 'w') as fp:
+                json.dump(cdict, fp)
+            break
             #cols[j*2+1].write(n)
 
-    st.write(i,getKeysByValue(cdict, 'धातवः'))
-    with open('chapter1.words.classified', 'w') as fp:
-        json.dump(cdict, fp)
+    #st.write(i,getKeysByValue(cdict, 'धातवः'))
+    
 elif toDisplay == "धातवः":
     धातु = getKeysByValue(cdict, 'धातवः')
     st.write(धातु)
