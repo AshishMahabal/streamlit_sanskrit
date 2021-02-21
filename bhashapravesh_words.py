@@ -34,9 +34,9 @@ toDisplay = st.sidebar.radio(
 )
 
 if toDisplay == "Unclassified":
-    #st.write(cdict)
+    
     unc = getKeysByValue(cdict, 'Unclassified')
-    #uncup = []
+    st.write(toDisplay, len(unc))
     i=0
     for key in unc:
         i+=1
@@ -55,10 +55,13 @@ if toDisplay == "Unclassified":
             #cols[j*2+1].write(n)
 
     #st.write(i,getKeysByValue(cdict, 'धातवः'))
-    
-elif toDisplay == "धातवः":
-    धातु = getKeysByValue(cdict, 'धातवः')
-    st.write(धातु)
+else:
+    tdict = getKeysByValue(cdict,toDisplay)
+    st.write(toDisplay, len(tdict))
+    st.write(tdict)
+# elif toDisplay == "धातवः":
+#     धातु = getKeysByValue(cdict, 'धातवः')
+#     st.write(धातु)
 
 #st.write(cdict)
 
