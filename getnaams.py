@@ -1,20 +1,23 @@
 import pandas as pd 
 
-naams = pd.read_csv('naamapadaani_responses.csv')
+naams = pd.read_csv('/Users/aam/GitHub/streamlit_sanskrit/naamapadaani_responses.csv')
 print(naams.columns)
 
 for index, row in naams.iterrows():
-    if row.iloc[3] == 'स्त्रिलिङ्ग':
+    if row.iloc[3] == 'स्त्रीलिङ्ग':
         linga = 'स्त्री'
     if row.iloc[3] == 'पुल्लिङ्ग':
         linga = 'पु'
     if row.iloc[3] == 'नपुंसकलिङ्ग':
         linga = 'न'
     for i in range(4,len(row)):
-        row.iloc[i].strip()
+        if isinstance(row.iloc[i],str):
+            row.iloc[i] = row.iloc[i].strip() # remove leading and trailing spaces
+        else:
+            row.iloc[i] = ''
     vibhaktis = '#'.join(row.iloc[4:])
     line = "nouns['%s (%s)'] = '%s'" % (row.iloc[2],linga,vibhaktis)
-    print(' '.join(line.split()))
+    print(' '.join(line.split())) # replace multiple spaces with a single space
     
     #print(' '.join("nouns['",row.iloc[2]," (",linga,")'] = '",'#'.join(row.iloc[4:]),"'",sep="")").split()
     #print("nouns['",row.iloc[2]," (",linga,")'] = '",'#'.join(row.iloc[4:]),"'",sep="")
