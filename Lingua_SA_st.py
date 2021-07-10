@@ -12,7 +12,7 @@ st.sidebar.title("Options")
 toDisplay = st.sidebar.radio(
 	"Choose",
 	["Nouns", "Prahelika"],
-	index=0
+	index=1
 )
 
 
