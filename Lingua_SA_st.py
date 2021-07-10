@@ -4,14 +4,18 @@ from SA import sandhi, transliterate, vibhakti
 import random
 import numpy as np
 import os
+import random
 
 st.title('Let us do some Sanskrit')
+st.sidebar.title("Options")
 
-# तृृृ़ ऋॣ  लॄ
+toDisplay = st.sidebar.radio(
+	"Choose",
+	["Nouns", "Prahelika"],
+	index=0
+)
 
-#st.sidebar.header('Noun tables')
 
-#labels = ["प्रथमा","द्वितीया","तृतीया","चतुर्थी","पंचमी","षष्ठी","सप्तमी","संबोधन"]
 vachanas = ['एक','द्वि','बहु']
 sup = ["सु","औ","जस्","सु ","औ ","जस् ","अम्","औट्","शस्","टा",'भ्याम्','भिस्','ङे','भ्याम् ','भ्यस्',
     'ङसि','भ्याम्  ','भ्यस् ','ङस्','ओस्','आम् ','ङि','ओस् ','सुप्']
@@ -170,86 +174,86 @@ def nounlisttable2(devnouns=['अस्मद् (त्रि)','राम (प
     return df
 
 
+def fornouns():
 
-emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':star:',':musical_note:']
+    emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':star:',':musical_note:']
 
-copts = []
-opts = st.beta_columns(3)
-copts.append(opts[0].checkbox('Notes',value='True'))
-copts.append(opts[1].checkbox('Quiz'))
-copts.append(opts[2].checkbox('Show'))
-#copts.append(opts[3].selectbox('Select noun1',devnouns))
+    copts = []
+    opts = st.beta_columns(3)
+    copts.append(opts[0].checkbox('Notes',value='True'))
+    copts.append(opts[1].checkbox('Quiz'))
+    copts.append(opts[2].checkbox('Show'))
+    #copts.append(opts[3].selectbox('Select noun1',devnouns))
 
-
-
-if copts[2]:
-    sarvadevnoun = st.selectbox(
+    if copts[2]:
+        sarvadevnoun = st.selectbox(
         'Select sarvanaam',
         sarvadevnouns,)
         #format_func=showdev)
 
-devnoun = st.selectbox(
-    'Select noun',
-    devnouns,)
-    #format_func=showdev)
+    devnoun = st.selectbox(
+        'Select noun',
+        devnouns,)
+        #format_func=showdev)
 
+    if copts[0]:
+        st.subheader("Notes:")
+        st.write("For the set of nouns in the drop down menu, you can see their forms\
+        and/or quiz yourself about them. I created these especially to ensure I get the\
+        hrasv/dirgha and halant correct for various nouns. I will add more nouns, and\
+        features. Currently for the forms you get right, you will see emojis displayed\
+        near those forms.")
+        st.write("Conjuncts do not show up well on Safari.")
+        st.write("In devnagari mode, use H for visarga sign.")
 
+    if copts[1]: # quiz
+        st.subheader('Noun quiz')
+        st.write("Please complete the following for ",devnoun)
+        
+        vibhaktis = []
+        cvibhaktis = nouns[devnoun].split('#')
+        #cvibhaktis = list(map(lambda it: it.strip(), cvibhaktis))
+        cvibhaktis = [item.strip() for item in cvibhaktis]
 
-if copts[0]:
-    st.subheader("Notes:")
-    st.write("For the set of nouns in the drop down menu, you can see their forms\
-    and/or quiz yourself about them. I created these especially to ensure I get the\
-    hrasv/dirgha and halant correct for various nouns. I will add more nouns, and\
-    features. Currently for the forms you get right, you will see emojis displayed\
-    near those forms.")
-    st.write("Conjuncts do not show up well on Safari.")
-    st.write("In devnagari mode, use H for visarga sign.")
+        corrects = 0
+        for i in range(len(labels)):
+            cols = st.beta_columns(7)
+            vibhaktis.append(cols[0].write(labels[i]))
+            for j in range(3):
+                vibhaktis.append(cols[j*2+1].text_input(sup[i*3+j],""))
+                lab = str(i*3+j+1)
+                if cvibhaktis[i*3+j] != vibhaktis[i*7+j*2+1].strip():
+                    vibhaktis.append(cols[j*2+2].write(''))
+                    #vibhaktis.append(cols[j*2+2].checkbox('',value=False,key=lab))
+                else:
+                    vibhaktis.append(cols[j*2+2].write(random.choice(emojis)))
+                    #vibhaktis.append(cols[j*2+2].checkbox('',value=True,key=lab))
+                    corrects += 1
+                    
 
-if copts[1]: # quiz
-    st.subheader('Noun quiz')
-    st.write("Please complete the following for ",devnoun)
-    
-    vibhaktis = []
-    cvibhaktis = nouns[devnoun].split('#')
-    #cvibhaktis = list(map(lambda it: it.strip(), cvibhaktis))
-    cvibhaktis = [item.strip() for item in cvibhaktis]
+        st.write(corrects,"/24 correct")
+        if corrects == 24:
+            st.write(':sunglasses:')
+        
+    if copts[2]: # show
+        # We should get noun and linga here that way we can type
+        # and not rely on the drop down list
+        st.subheader('Nountable')
+        #st.write(transliterate(noun), transliterate(linga[noun]))
+        if len(sarvadevnoun)>0:
+            st.write(sarvadevnoun+ ' ' + devnoun)
+            df = nounlisttable2(devnouns=[sarvadevnoun,devnoun])
+        else:
+            st.write(devnoun)
+            df = nounlisttable(devnoun)
+        #df.set_index('', inplace=True)
+        st.write(df.to_markdown())
 
-    corrects = 0
-    for i in range(len(labels)):
-        cols = st.beta_columns(7)
-        vibhaktis.append(cols[0].write(labels[i]))
-        for j in range(3):
-            vibhaktis.append(cols[j*2+1].text_input(sup[i*3+j],""))
-            lab = str(i*3+j+1)
-            if cvibhaktis[i*3+j] != vibhaktis[i*7+j*2+1].strip():
-                vibhaktis.append(cols[j*2+2].write(''))
-                #vibhaktis.append(cols[j*2+2].checkbox('',value=False,key=lab))
-            else:
-                vibhaktis.append(cols[j*2+2].write(random.choice(emojis)))
-                #vibhaktis.append(cols[j*2+2].checkbox('',value=True,key=lab))
-                corrects += 1
-                
-
-    st.write(corrects,"/24 correct")
-    if corrects == 24:
-        st.write(':sunglasses:')
-    
-if copts[2]: # show
-    # We should get noun and linga here that way we can type
-    # and not rely on the drop down list
-    st.subheader('Nountable')
-    #st.write(transliterate(noun), transliterate(linga[noun]))
-    if len(sarvadevnoun)>0:
-        st.write(sarvadevnoun+ ' ' + devnoun)
-        df = nounlisttable2(devnouns=[sarvadevnoun,devnoun])
-    else:
-        st.write(devnoun)
-        df = nounlisttable(devnoun)
-    #df.set_index('', inplace=True)
-    st.write(df.to_markdown())
-
-
-# #os.system("gtts-cli -l hi 'नमस्ते महोदय' | ffmpeg -i pipe:0 -f wav pipe:1 | ~/Downloads/sox-14.4.2/play -t wav -")
-# audiostr = "gtts-cli -l hi --slow '%s' | ffmpeg -i pipe:0 -f wav pipe:1 | ~/Downloads/sox-14.4.2/play -t wav -" % nouns[devnoun]
-# os.system(audiostr)
-# #st.write(audiostr)
+if toDisplay == "Prahelika":
+    prahelikas = open('prahelika.list','r').read().split(',')
+    rchoice = random.sample(prahelikas,1)[0].strip()[1:-1]
+    st.subheader("a random prahelika")
+    st.write(rchoice)
+    #st.stop()
+elif toDisplay == "Nouns":
+    fornouns()
