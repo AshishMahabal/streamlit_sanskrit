@@ -5,20 +5,32 @@ import random
 import numpy as np
 import os
 import random
+import json
 
 st.title('Let us do some Sanskrit')
 st.sidebar.title("Options")
 
 toDisplay = st.sidebar.radio(
 	"Choose",
-	["Nouns", "Prahelika"],
-	index=1
+	["Nouns", "Verbs", "Prahelika"],
+	index=2
 )
+# these elements need to be distinct. Use this later for vikaran and purush pratya.
+तिङ् = {} # तिप्‍तस्‍झिसिप्‍थस्‍थमिब्‍वस्‍मस्‍ताताञ्झथासाथाम्‍ध्‍वमिड्वहिमहिङ्
+तिङ्['परस्मै'] = "तिप्#तस्#झि#सिप्#थस्#थ#मिप्#वस्#मस्".split('#')
+तिङ्['आत्मने'] = "त#आताम्#झ#थास्#आथाम्#ध्वम्#इट्#वहि#महिङ्".split('#')
 
+purush = ['प्रथम','मध्यम','उत्तम']
+
+with open("verbs.json", "rb") as f:
+    verbs = json.loads(f.read())
 
 vachanas = ['एक','द्वि','बहु']
-sup = ["सु","औ","जस्","सु ","औ ","जस् ","अम्","औट्","शस्","टा",'भ्याम्','भिस्','ङे','भ्याम् ','भ्यस्',
-    'ङसि','भ्याम्  ','भ्यस् ','ङस्','ओस्','आम् ','ङि','ओस् ','सुप्']
+sup = ["सु","औ","जस्","सु ","औ ","जस् ","अम्","औट्","शस्","टा",'भ्याम्','भिस्',
+    'ङे','भ्याम् ','भ्यस्', 'ङसि','भ्याम्  ','भ्यस् ','ङस्','ओस्','आम् ','ङि','ओस् ','सुप्']
+
+emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',
+    ':star:',':musical_note:']
 
 nouns = {}
 nouns['राम (पु)'] = 'रामः#रामौ#रामाः#हे राम#हे रामौ#हे रामाः#रामम्#रामौ#रामान्#रामेण#रामाभ्याम्#रामैः#\
@@ -173,10 +185,15 @@ def nounlisttable2(devnouns=['अस्मद् (त्रि)','राम (प
     #st.write(df.to_markdown())
     return df
 
+def verblisttable(verb='अस्',pada='परस्मै',lakaara='लट्'):
+    पुरुष = ['प्रथम','मध्यम','उत्तम']
+    tdata = np.reshape(verbs[verb][pada][lakaara].split('#'), (3,3))
+    df = pd.DataFrame(tdata,columns=['एकवचन','द्विवचन','बहुवचन'])
+    df['पुरुष'] = पुरुष
+    df = df.set_index('पुरुष')
+    return df
 
 def fornouns():
-
-    emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':star:',':musical_note:']
 
     copts = []
     opts = st.beta_columns(3)
@@ -249,6 +266,77 @@ def fornouns():
         #df.set_index('', inplace=True)
         st.write(df.to_markdown())
 
+
+
+def forverbs():
+    copts = []
+    opts = st.beta_columns(3)
+    copts.append(opts[0].checkbox('Notes',value='True'))
+    copts.append(opts[1].checkbox('Quiz'))
+    copts.append(opts[2].checkbox('Show'))
+    #copts.append(opts[3].selectbox('Select noun1',devnouns))
+
+    vopts = []
+    sopts = st.beta_columns(3)
+    vopts.append(sopts[0].selectbox(
+        'Select verb',
+        list(verbs.keys()),)
+    )
+    verb = vopts[0]
+    vopts.append(sopts[1].selectbox('Select pada',verbs[verb]['pada']))
+    #st.write(verbs[verb]['pada'])
+    pada = vopts[1]
+    vopts.append(sopts[2].selectbox('Select lakaar',list(verbs[verb][pada].keys())))
+    lakaara = vopts[2]
+    गण = verbs[verb]['गण']
+
+    #st.write('Curent selections: ',verb,pada,lakaara)
+
+    if copts[0]:
+        st.subheader("Notes:")
+        st.write("For the set of verbs in the drop down menu, you can see their forms\
+        and/or quiz yourself about them. I will add more verbs, padas, and lakaar.\
+        And features. Currently for the forms you get right, you will see emojis displayed\
+        near those forms.")
+        st.write("Conjuncts do not show up well on Safari. In devnagari mode, use H for visarga sign.")
+
+    if copts[1]: # quiz
+        st.subheader('Verb quiz')
+        st.write("Please complete the following for ",verb,'धातु (गण ',गण,') ',pada,'पद ',lakaara,'लकार')
+        
+        #st.write(verbs[verb])
+        #st.write(verb)
+        purushas = []
+        cpurushas = verbs[verb][pada][lakaara].split('#')
+        cpurushas = [item.strip() for item in cpurushas]
+
+        corrects = 0
+        for i in range(len(purush)):
+            cols = st.beta_columns(7)
+            purushas.append(cols[0].write(purush[i]))
+            for j in range(3):
+                purushas.append(cols[j*2+1].text_input(तिङ्[pada][i*3+j],""))
+                lab = str(i*3+j+1)
+                if cpurushas[i*3+j] != purushas[i*7+j*2+1].strip():
+                    purushas.append(cols[j*2+2].write(''))
+                    #vibhaktis.append(cols[j*2+2].checkbox('',value=False,key=lab))
+                else:
+                    purushas.append(cols[j*2+2].write(random.choice(emojis)))
+                    #vibhaktis.append(cols[j*2+2].checkbox('',value=True,key=lab))
+                    corrects += 1
+                    
+
+        st.write(corrects,"/9 correct")
+        if corrects == 9:
+            st.write(':sunglasses:')
+        
+    if copts[2]: # show
+        st.subheader('Verbtable')
+        st.write(verb,' धातु (गण ',गण,') ',pada,'पद ',lakaara,'लकार selected')
+        df = verblisttable(verb,pada,lakaara)
+        st.write(df.to_markdown())
+
+
 if toDisplay == "Prahelika":
     prahelikas = open('prahelika.list','r').read().split(',')
     rchoice = random.sample(prahelikas,1)[0].strip()[1:-1]
@@ -257,3 +345,5 @@ if toDisplay == "Prahelika":
     #st.stop()
 elif toDisplay == "Nouns":
     fornouns()
+elif toDisplay == "Verbs":
+    forverbs()
