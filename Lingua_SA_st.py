@@ -12,7 +12,7 @@ st.sidebar.title("Options")
 
 toDisplay = st.sidebar.radio(
 	"Choose",
-	["Nouns", "Verbs", "Prahelika"],
+	["Nouns", "Verbs", "Prahelika", "Subhashitani"],
 	index=2
 )
 # these elements need to be distinct. Use this later for vikaran and purush pratya.
@@ -343,6 +343,11 @@ if toDisplay == "Prahelika":
     st.subheader("a random prahelika")
     st.write(rchoice)
     #st.stop()
+if toDisplay == "Subhashitani":
+    subhashitas = open('subhashitani.list','r').read().split(',')
+    rchoice = random.sample(subhashitas,1)[0].strip()[1:-1]
+    st.subheader("a random subhashita")
+    st.write(rchoice)
 elif toDisplay == "Nouns":
     fornouns()
 elif toDisplay == "Verbs":
