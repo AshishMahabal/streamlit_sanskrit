@@ -240,14 +240,25 @@ def fornouns():
             vibhaktis.append(cols[0].write(labels[i]))
             for j in range(3):
                 vibhaktis.append(cols[j*2+1].text_input(sup[i*3+j],""))
-                lab = str(i*3+j+1)
-                if cvibhaktis[i*3+j] != vibhaktis[i*7+j*2+1].strip():
-                    vibhaktis.append(cols[j*2+2].write(''))
-                    #vibhaktis.append(cols[j*2+2].checkbox('',value=False,key=lab))
+                if '/' in cvibhaktis[i*3+j]:
+                    posscvibhaktis = cvibhaktis[i*3+j].split('/')
+                    if posscvibhaktis[0] == vibhaktis[i*7+j*2+1].strip():
+                        vibhaktis.append(cols[j*2+2].write(random.choice(emojis) + '(' + posscvibhaktis[1] + ')'))
+                        corrects += 0.5
+                    elif posscvibhaktis[1] == vibhaktis[i*7+j*2+1].strip():
+                        vibhaktis.append(cols[j*2+2].write(random.choice(emojis) + '(' + posscvibhaktis[0] + ')'))
+                        corrects += 0.5
+                    else:
+                        vibhaktis.append(cols[j*2+2].write(''))
                 else:
-                    vibhaktis.append(cols[j*2+2].write(random.choice(emojis)))
-                    #vibhaktis.append(cols[j*2+2].checkbox('',value=True,key=lab))
-                    corrects += 1
+                #lab = str(i*3+j+1)
+                    if cvibhaktis[i*3+j] != vibhaktis[i*7+j*2+1].strip():
+                        vibhaktis.append(cols[j*2+2].write(''))
+                        #vibhaktis.append(cols[j*2+2].checkbox('',value=False,key=lab))
+                    else:
+                        vibhaktis.append(cols[j*2+2].write(random.choice(emojis)))
+                        #vibhaktis.append(cols[j*2+2].checkbox('',value=True,key=lab))
+                        corrects += 1
                     
 
         st.write(corrects,"/24 correct")
