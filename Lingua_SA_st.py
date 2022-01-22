@@ -242,10 +242,10 @@ def fornouns():
                 vibhaktis.append(cols[j*2+1].text_input(sup[i*3+j],""))
                 if '/' in cvibhaktis[i*3+j]:
                     posscvibhaktis = cvibhaktis[i*3+j].split('/')
-                    if cvibhaktis[i*3+j] != vibhaktis[i*7+j*2+1].strip():
+                    if cvibhaktis[i*3+j] == vibhaktis[i*7+j*2+1].strip():
                         vibhaktis.append(cols[j*2+2].write(random.choice(emojis)))
                         corrects += 1
-                    elif posscvibhaktis[1]+'/'+posscvibhaktis[0] != vibhaktis[i*7+j*2+1].strip():
+                    elif posscvibhaktis[1]+'/'+posscvibhaktis[0] == vibhaktis[i*7+j*2+1].strip():
                         vibhaktis.append(cols[j*2+2].write(random.choice(emojis)))
                         corrects += 1
                     elif posscvibhaktis[0] == vibhaktis[i*7+j*2+1].strip():
