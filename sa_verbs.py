@@ -247,7 +247,7 @@ def score(secret,test):
 def twos():
     return
 
-def threes(coptscount):
+def threes():
 
     # column_names = ["1", "2", "3"]
     # df = pd.DataFrame(columns = column_names)
@@ -271,8 +271,6 @@ def threes(coptscount):
 
 
 
-    #st.session_state
-
 def fours():
     return
 
@@ -280,7 +278,7 @@ def fours():
 if toDisplay == "2":
     twos()
 elif toDisplay == "3":
-    threes(st.session_state.coptscount)
+    threes()
 elif toDisplay == "4":
     fours()
 
