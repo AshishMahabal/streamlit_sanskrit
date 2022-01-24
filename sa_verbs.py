@@ -1,107 +1,318 @@
 import pandas as pd
 import streamlit as st
-from SA import sandhi, transliterate, vibhakti
+
 import random
 import numpy as np
 import os
+import random
 import json
 
-st.title('Let us do some Sanskrit (Verbs)')
+import unicodedata
 
-vachanas = ['एक','द्वि','बहु']
-# these elements need to be distinct. Use this later for vikaran and purush pratya.
-तिङ् = {} # तिप्‍तस्‍झिसिप्‍थस्‍थमिब्‍वस्‍मस्‍ताताञ्झथासाथाम्‍ध्‍वमिड्वहिमहिङ्
-तिङ्['परस्मै'] = "तिप्#तस्#झि#सिप्#थस्#थ#मिप्#वस्#मस्".split('#')
-तिङ्['आत्मने'] = "त#आताम्#झ#थास्#आथाम्#ध्वम्#इट्#वहि#महिङ्".split('#')
+st.title('Marathi Wordle')
+st.sidebar.title("Options")
 
-purush = ['प्रथम','मध्यम','उत्तम']
-
-with open("verbs.json", "rb") as f:
-    verbs = json.loads(f.read())
-
-def showdev(roman):
-    return st.markdown(transliterate(roman))
-
-def verblisttable(verb='अस',pada='परस्मै',lakAra='लट्'):
-    पुरुष = ['प्रथम','मध्यम','उत्तम']
-    tdata = np.reshape(verbs[verb][pada][lakaara].split('#'), (3,3))
-    df = pd.DataFrame(tdata,columns=['एकवचन','द्विवचन','बहुवचन'])
-    df['पुरुष'] = पुरुष
-    df = df.set_index('पुरुष')
-    return df
-
-emojis = [':sunglasses:',':smile:',':smiley:',':heart:',':grin:',':triumph:',':star:',':musical_note:']
-
-copts = []
-opts = st.beta_columns(3)
-copts.append(opts[0].checkbox('Notes',value='True'))
-copts.append(opts[1].checkbox('Quiz'))
-copts.append(opts[2].checkbox('Show'))
-#copts.append(opts[3].selectbox('Select noun1',devnouns))
-
-vopts = []
-sopts = st.beta_columns(3)
-vopts.append(sopts[0].selectbox(
-    'Select verb',
-    list(verbs.keys()),)
+toDisplay = st.sidebar.radio(
+	"Length",
+	["2", "3", "4"],
+	index=1
 )
-verb = vopts[0]
-vopts.append(sopts[1].selectbox('Select pada',verbs[verb]['pada']))
-pada = vopts[1]
-vopts.append(sopts[2].selectbox('Select pada',list(verbs[verb][pada].keys())))
-lakaara = vopts[2]
-गण = verbs[verb]['गण']
 
-#st.write('Curent selections: ',verb,pada,lakaara)
+wordlist = ['मयत','मकडी','माकड','मगर','मंकड','कमळ','करीम','किस्त्रीम','मंगळ','मालती']
 
-if copts[0]:
+labels = ['r1', 'r2', 'r3', 'r4', 'r5', 'r6']
+vibhaktis = []
+sup = ["स् (सु)","औ"," अस् (जस्)","स् (सु) ","औ ","अस् (जस्) ","अम्","औट्","अस् (शस्)","आ (टा)",'भ्याम्','भिस्',
+    'ए (ङे)','भ्याम् ','भ्यस्', 'अस् (ङसि)','भ्याम्  ','भ्यस् ','अस् (ङस्)','ओस्','आम् ','इ (ङि)','ओस् ','सु (सुप्)']
+
+def split_clusters_helper(s):
+    """Generate the grapheme clusters for the string s. (Not the full
+    Unicode text segmentation algorithm, but probably good enough for
+    Devanagari.)
+    """
+    virama = u'\N{DEVANAGARI SIGN VIRAMA}'
+    cluster = u''
+    last = None
+    for c in s:
+        cat = unicodedata.category(c)[0]
+        if cat == 'M' or cat == 'L' and last == virama:
+            cluster += c
+        else:
+            if cluster:
+                yield cluster
+            cluster = c
+        last = c
+    if cluster:
+        yield cluster
+
+
+def split_clusters(s):
+    return list(split_clusters_helper(s))
+
+def splitc(word):
+    return [i for i in word]
+
+def get_greens(secret_word, test_word):
+    sclust = split_clusters(secret_word)
+    tclust = split_clusters(test_word)
+    if len(sclust)!=len(tclust):
+        print("mismatched length")   # This should not happen
+    
+    greens = []
+    for i in range(len(sclust)):
+        if sclust[i] == tclust[i]:
+            greens.append(i)
+            
+    return greens
+
+consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 
+              'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
+              'य', 'र', 'ऱ', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
+# Should map 'ऱ' to 'र'
+
+vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
+          'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
+
+vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, 'ए':7, 'ऐ':8,  'ओ':9, 'औ':10, 
+          'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
+
+def get_blues(secret_word, test_word):
+    '''
+    arguments provided with greens already removed
+    indexing will have to be properly accounted for
+    '''
+    
+    sclust = split_clusters(secret_word)
+    tclust = split_clusters(test_word)
+    if len(sclust)!=len(tclust):
+        print("mismatched length")   # This should not happen
+        
+    sblues = []
+    tblues = []
+    blues = []
+    for i in range(len(sclust)):
+        scomps = [j for j in sclust[i] if j != '्'] # remove halant signs
+        tcomps = [j for j in tclust[i] if j != '्']
+        # check for match अ needs to be handled differently as it does not appear as a separate vowel
+        # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
+        # Plus actual vowels
+        
+        #print(scomps,tcomps)
+        found_vowel = 0
+        for j in scomps:
+            if j in vowels:
+                sblues.append(vowel_subs[j])
+                found_vowel += 1
+        if found_vowel == 0:
+            sblues.append(1)
+            
+        found_vowel = 0
+        for j in tcomps:
+            if j in vowels:
+                tblues.append(vowel_subs[j])
+                found_vowel += 1
+        if found_vowel == 0:
+            tblues.append(1)
+    
+    for i in range(len(sclust)):
+        if sblues[i] == tblues[i]:
+            blues.append(i)
+    
+#    return list(set(blues))
+    return list(blues),sblues,tblues
+
+def get_blues2(secret_word, test_word):
+    '''
+    arguments provided with greens already removed
+    indexing will have to be properly accounted for
+    OR do it separately afterwards
+    '''
+    
+    sclust = split_clusters(secret_word)
+    tclust = split_clusters(test_word)
+    if len(sclust)!=len(tclust):
+        print("mismatched length")   # This should not happen
+        
+    blues2 = []
+    supsblues2 = []
+    suptblues2 = []
+    for i in range(len(sclust)):
+        sblues2 = []
+        tblues2 = []
+
+        scomps = [j for j in sclust[i] if j != '्'] # remove halant signs
+        tcomps = [j for j in tclust[i] if j != '्']
+        # check for match अ needs to be handled differently as it does not appear as a separate vowel
+        # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
+        # Plus actual vowels
+        
+        #print(scomps,tcomps)
+        found_consonent = 0
+        for j in scomps:
+            if j in consonents:
+                sblues2.append(j)
+                found_consonent += 1
+        if found_consonent == 0:
+            sblues2.append('')
+        supsblues2.append(sblues2)
+            
+        found_consonent = 0
+        for j in tcomps:
+            if j in consonents:
+                tblues2.append(j)
+                found_consonent += 1
+        if found_consonent == 0:
+            tblues2.append('')
+        suptblues2.append(tblues2)
+    
+        #print(sblues2,tblues2)
+        if set(sblues2).intersection(set(tblues2)):
+            blues2.append(i)
+    
+#    return list(set(blues))
+    return list(blues2),supsblues2,suptblues2
+
+def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
+    #print(ss,svowels,tvowels,sconsonents,tconsonents)
+    ysvowels = []
+    ysconsonents = []
+    ytvowels = []
+    ytconsonents = []
+    checklist = []
+    for i in range(len(svowels)):
+        if ss[i] == 'X':
+            ysvowels.append(svowels[i])
+            ysconsonents.append(sconsonents[i])
+            ytvowels.append(tvowels[i])
+            ytconsonents.append(tconsonents[i])
+            checklist.append(i)
+        else:
+            ysvowels.append(0)
+            ysconsonents.append(['']) # changed this from 0 for set union to work
+            ytvowels.append(0)
+            ytconsonents.append(['']) # changed this from 0 for set union to work
+            
+    #print(ss,ysvowels,ytvowels,ysconsonents,ytconsonents)
+    #print(checklist)
+    
+    ys = []
+    accountedv = [] # which of secret words letters already have a yellow
+    accountedc = [] # this is for the consonants
+    for i in checklist:
+        #print(i)
+        for j in checklist:
+            if j not in accountedv and ytvowels[i] == ysvowels[j]:
+                ys.append(i)
+                accountedv.append(j)
+                print("appending %d to ys due to vowel match" % i)
+        if ytconsonents[i] != ['']: # skip pure vowels
+            if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
+                #print("found in union")
+                ys.append(i)
+                accountedc.append(j)
+                print("appending %d to ys due to consonent match" % i)
+    uniq_ys = set(ys)
+    
+    for i in checklist: # use word length here
+        if i in uniq_ys:
+            ss = ss[:i] + 'Y' + ss[i + 1:]
+        else:
+            ss = ss[:i] + 'R' + ss[i + 1:]
+            
+    #print(ss)
+    
+    return ss
+        
+def score(secret,test):
+    
+    green_array = get_greens(secret,test)
+    blue_array1,svowels, tvowels = get_blues(secret,test)
+    blue_array2,sconsonents, tconsonents = get_blues2(secret,test)
+    blue_comb = sorted(set(blue_array1) | set(blue_array2))
+
+    ss = 'XXX' # should be word length
+    ss = 'X' * len(split_clusters(secret))
+    for s in blue_comb:
+        ss = ss[:s] + 'B' + ss[s + 1:]
+    for s in green_array:
+        ss = ss[:s] + 'G' + ss[s + 1:]
+    #print(ss, i)
+    if ss.count('X') > 1:
+        newss = test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents)
+    else:
+        newss = ss.replace('X','R')
+        
+    return newss
+
+def twos():
+    return
+
+def threes(coptscount):
+
+    # column_names = ["1", "2", "3"]
+    # df = pd.DataFrame(columns = column_names)
+
     st.subheader("Notes:")
-    st.write("For the set of verbs in the drop down menu, you can see their forms\
-    and/or quiz yourself about them. I will add more verbs, padas, and lakaar.\
-    And features. Currently for the forms you get right, you will see emojis displayed\
-    near those forms.")
-    st.write("Conjuncts do not show up well on Safari. In devnagari mode, use H for visarga sign.")
-
-if copts[1]: # quiz
-    st.subheader('Verb quiz')
-    st.write("Please complete the following for ",verb,'धातु (गण ',गण,') ',pada,'पद ',lakaara,'लकार')
+    st.write("For the ... forms.")
     
-    #st.write(verbs[verb])
-    #st.write(verb)
-    purushas = []
-    cpurushas = verbs[verb][pada][lakaara].split('#')
-    cpurushas = [item.strip() for item in cpurushas]
-
+    secret = 'काळीज'
     corrects = 0
-    for i in range(len(purush)):
-        cols = st.beta_columns(7)
-        purushas.append(cols[0].write(purush[i]))
-        for j in range(3):
-            purushas.append(cols[j*2+1].text_input(तिङ्[pada][i*3+j],""))
-            lab = str(i*3+j+1)
-            if cpurushas[i*3+j] != purushas[i*7+j*2+1].strip():
-                purushas.append(cols[j*2+2].write(''))
-                #vibhaktis.append(cols[j*2+2].checkbox('',value=False,key=lab))
-            else:
-                purushas.append(cols[j*2+2].write(random.choice(emojis)))
-                #vibhaktis.append(cols[j*2+2].checkbox('',value=True,key=lab))
-                corrects += 1
-                
+    for i in range(10):
+        cols = st.columns(2)
 
-    st.write(corrects,"/9 correct")
-    if corrects == 9:
-        st.write(':sunglasses:')
-    
-if copts[2]: # show
-    # We should get noun and linga here that way we can type
-    # and not rely on the drop down list
-    st.subheader('Verbtable')
-    st.write(verb,' धातु (गण ',गण,') ',pada,'पद ',lakaara,'लकार selected')
-    df = verblisttable(verb,pada,lakaara)
-    st.write(df.to_markdown())
+        myc = cols[0].text_input('Guess %s' % i,'')
+
+        if myc:
+            foo = score(secret,myc.strip())
+            cols[1].write(foo)
+            if foo == 'yes':
+                st.write("you win")
 
 
-# #os.system("gtts-cli -l hi 'नमस्ते महोदय' | ffmpeg -i pipe:0 -f wav pipe:1 | ~/Downloads/sox-14.4.2/play -t wav -")
-# audiostr = "gtts-cli -l hi --slow '%s' | ffmpeg -i pipe:0 -f wav pipe:1 | ~/Downloads/sox-14.4.2/play -t wav -" % nouns[devnoun]
-# os.system(audiostr)
-# #st.write(audiostr)
+
+
+    #st.session_state
+
+def fours():
+    return
+
+if 'coptscount' not in st.session_state:
+    	st.session_state.coptscount = 0
+#coptscount = 0
+
+if toDisplay == "2":
+    twos()
+elif toDisplay == "3":
+    threes(st.session_state.coptscount)
+elif toDisplay == "4":
+    fours()
+
+
+############################
+
+# Some styling code from here: https://pandas.pydata.org/pandas-docs/version/0.25.1/user_guide/style.html
+
+def background_color(val):
+    '''
+    highlight the maximum in a Series yellow.
+    '''
+    #color = 'red' if val == 'मा' else 'black'
+    #is_max = s == s.max()
+    return 'background-color: red' if val == 'मा' else 'background-color: white'
+
+def color_wrong_red(val):
+    """
+    Takes a scalar and returns a string with
+    the css property `'color: red'` for negative
+    strings, black otherwise.
+    """
+    color = 'red' if val == 'मा' else 'black'
+    return 'color: %s' % color
+
+# df = pd.DataFrame([['म्हा','ता','रा'],['मा','णू','स']])
+
+# #s = df.style.applymap(color_wrong_red)
+# s = df.style.applymap(background_color)
+# #s
+# st.dataframe(s)
+
