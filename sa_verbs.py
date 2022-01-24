@@ -265,6 +265,10 @@ def details():
     st.subheader("More details:")
     st.write("If the secret word is ...")
 
+def reveal():
+    st.subheader("The word is ... ")
+    st.write(st.session_state['secret'])
+
 def threes():
 
     # column_names = ["1", "2", "3"]
@@ -281,10 +285,11 @@ def threes():
     #st.write(secret)
 
     copts = []
-    opts = st.columns(3)
+    opts = st.columns(4)
     copts.append(opts[0].checkbox('Notes',value='True'))
     copts.append(opts[1].checkbox('Todo'))
     copts.append(opts[2].checkbox('Details'))
+    copts.append(opts[3].checkbox('Reveal'))
 
     #st.subheader("Notes:")
     if copts[0]:
@@ -293,6 +298,8 @@ def threes():
         todos()
     if copts[2]:
         details()
+    if copts[3]:
+        reveal()
     #st.write("For the ... forms.")
     
     im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
