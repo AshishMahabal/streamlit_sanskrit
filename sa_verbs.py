@@ -10,20 +10,27 @@ import json
 import unicodedata
 
 st.title('Marathi Wordle')
-st.sidebar.title("Options")
+st.sidebar.title("Word Length")
 
 toDisplay = st.sidebar.radio(
-	"Length",
+	"Options",
 	["2", "3", "4"],
 	index=1
 )
 
 wordlist = ['मयत','मकडी','माकड','मगर','मंकड','कमळ','करीम','किस्त्रीम','मंगळ','मालती']
 
-labels = ['r1', 'r2', 'r3', 'r4', 'r5', 'r6']
-vibhaktis = []
-sup = ["स् (सु)","औ"," अस् (जस्)","स् (सु) ","औ ","अस् (जस्) ","अम्","औट्","अस् (शस्)","आ (टा)",'भ्याम्','भिस्',
-    'ए (ङे)','भ्याम् ','भ्यस्', 'अस् (ङसि)','भ्याम्  ','भ्यस् ','अस् (ङस्)','ओस्','आम् ','इ (ङि)','ओस् ','सु (सुप्)']
+consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 
+              'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
+              'य', 'र', 'ऱ', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
+# Should map 'ऱ' to 'र'
+
+vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
+          'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
+
+vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, 'ए':7, 'ऐ':8,  'ओ':9, 'औ':10, 
+          'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
+
 
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
@@ -65,16 +72,6 @@ def get_greens(secret_word, test_word):
             
     return greens
 
-consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 
-              'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
-              'य', 'र', 'ऱ', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
-# Should map 'ऱ' to 'र'
-
-vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
-          'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
-
-vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, 'ए':7, 'ऐ':8,  'ओ':9, 'औ':10, 
-          'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 def get_blues(secret_word, test_word):
     '''
@@ -247,12 +244,22 @@ def score(secret,test):
 def twos():
     return
 
+def notes():
+    st.write("Choose word length on the left (only 3 RIGHT NOW). Enter words with that length and hit tab. Advance to next fields yourself. Minimal error checking exists for now.")
+    st.write("Color code:")
+    st.write("Green means that letter is correct (position, consonant, and vowel)")
+    st.write("Blue means either consonant and vowel - or both - at that position match.")
+    st.write("Yellow means either consonant or vowel - or both - at that position matches that of a letter in the code.")
+    st.write("")
+
 def threes():
 
     # column_names = ["1", "2", "3"]
     # df = pd.DataFrame(columns = column_names)
 
-    st.subheader("Notes:")
+    #st.subheader("Notes:")
+    if st.checkbox('Notes'):
+        notes()
     st.write("For the ... forms.")
     
     secret = 'काळीज'
@@ -269,11 +276,8 @@ def threes():
                 st.write("you win")
 
 
-
-
 def fours():
     return
-
 
 if toDisplay == "2":
     twos()
