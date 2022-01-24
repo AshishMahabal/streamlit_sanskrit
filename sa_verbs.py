@@ -254,6 +254,7 @@ def notes():
     st.write("Green means that letter is correct (position, consonant, and vowel)")
     st.write("Blue means either consonant and vowel - or both - at that position match.")
     st.write("Yellow means either consonant or vowel - or both - at that position matches that of a letter in the code.")
+    st.write("Red means neither consonant nor vowel is right at that position.")
     st.write("")
 
 def todos():
@@ -294,23 +295,49 @@ def threes():
         details()
     #st.write("For the ... forms.")
     
+    im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
 
     corrects = 0
     for i in range(10):
-        cols = st.columns(2)
+        cols = st.columns(4)
 
         myc = cols[0].text_input('Guess %s' % str(i+1),'')
 
         if myc:
             foo = score(secret,myc.strip())
-            cols[1].write(foo)
-            if foo == 'yes':
+            # # The HTML rendering does not work properly
+            # df = pd.DataFrame([[foo[i] for i in range(len(foo))]])
+            # s = df.style.applymap(background_color)
+            # cols[1].write(st.dataframe(s))
+            for i in range(len(foo)):
+                cols[i+1].image(im[foo[i]])
+            #cols[1].write(foo)  # Original - works
+            if foo == 'G' * len(split_clusters(secret)):
                 st.write("you win")
 
 
 def fours():
     return
 
+def background_color(val):
+    '''
+    highlight the maximum in a Series yellow.
+    '''
+    #color = 'red' if val == 'मा' else 'black'
+    #is_max = s == s.max()
+
+    if val == 'G':
+        retcol = 'background-color: green'
+    if val == 'B':
+        retcol = 'background-color: blue'
+    if val == 'Y':
+        retcol = 'background-color: yellow'
+    if val == 'R':
+        retcol = 'background-color: red'
+
+    return retcol
+
+unsafe_allow_html=True
 if toDisplay == "2":
     twos()
 elif toDisplay == "3":
@@ -323,13 +350,6 @@ elif toDisplay == "4":
 
 # Some styling code from here: https://pandas.pydata.org/pandas-docs/version/0.25.1/user_guide/style.html
 
-def background_color(val):
-    '''
-    highlight the maximum in a Series yellow.
-    '''
-    #color = 'red' if val == 'मा' else 'black'
-    #is_max = s == s.max()
-    return 'background-color: red' if val == 'मा' else 'background-color: white'
 
 def color_wrong_red(val):
     """
