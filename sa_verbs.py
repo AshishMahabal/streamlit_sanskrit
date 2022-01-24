@@ -32,6 +32,7 @@ vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, '�
           'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 
+
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
     Unicode text segmentation algorithm, but probably good enough for
@@ -201,13 +202,13 @@ def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
             if j not in accountedv and ytvowels[i] == ysvowels[j]:
                 ys.append(i)
                 accountedv.append(j)
-                print("appending %d to ys due to vowel match" % i)
+                #print("appending %d to ys due to vowel match" % i)
         if ytconsonents[i] != ['']: # skip pure vowels
             if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
                 #print("found in union")
                 ys.append(i)
                 accountedc.append(j)
-                print("appending %d to ys due to consonent match" % i)
+                #print("appending %d to ys due to consonent match" % i)
     uniq_ys = set(ys)
     
     for i in checklist: # use word length here
@@ -245,29 +246,60 @@ def twos():
     return
 
 def notes():
-    st.write("Choose word length on the left (only 3 RIGHT NOW). Enter words with that length and hit tab. Advance to next fields yourself. Minimal error checking exists for now.")
+    st.subheader("Notes:")
+    st.write("Choose word length on the left (only 3 RIGHT NOW).\
+         Enter words with that length and hit tab. Advance to next fields yourself.\
+         Minimal error checking exists for now.")
     st.write("Color code:")
     st.write("Green means that letter is correct (position, consonant, and vowel)")
     st.write("Blue means either consonant and vowel - or both - at that position match.")
     st.write("Yellow means either consonant or vowel - or both - at that position matches that of a letter in the code.")
     st.write("")
 
+def todos():
+    st.subheader("ToDos:")
+    st.write("Lots of features.")
+
+def details():
+    st.subheader("More details:")
+    st.write("If the secret word is ...")
+
 def threes():
 
     # column_names = ["1", "2", "3"]
     # df = pd.DataFrame(columns = column_names)
 
-    #st.subheader("Notes:")
-    if st.checkbox('Notes'):
-        notes()
-    st.write("For the ... forms.")
+    # secret = 'काळीज'
+    # secret = wordlist[8]
     
-    secret = 'काळीज'
+    if 'secret' not in st.session_state:
+        words = open('subthrees.dat','r').read().split('\n')
+        secret = random.sample(words,1)[0]
+        st.session_state['secret'] = secret
+    secret = st.session_state['secret']
+    #st.write(secret)
+
+    copts = []
+    opts = st.columns(3)
+    copts.append(opts[0].checkbox('Notes',value='True'))
+    copts.append(opts[1].checkbox('Todo'))
+    copts.append(opts[2].checkbox('Details'))
+
+    #st.subheader("Notes:")
+    if copts[0]:
+        notes()
+    if copts[1]:
+        todos()
+    if copts[2]:
+        details()
+    #st.write("For the ... forms.")
+    
+
     corrects = 0
     for i in range(10):
         cols = st.columns(2)
 
-        myc = cols[0].text_input('Guess %s' % i,'')
+        myc = cols[0].text_input('Guess %s' % str(i+1),'')
 
         if myc:
             foo = score(secret,myc.strip())
