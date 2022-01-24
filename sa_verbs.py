@@ -276,9 +276,6 @@ def threes(coptscount):
 def fours():
     return
 
-if 'coptscount' not in st.session_state:
-    	st.session_state.coptscount = 0
-#coptscount = 0
 
 if toDisplay == "2":
     twos()
