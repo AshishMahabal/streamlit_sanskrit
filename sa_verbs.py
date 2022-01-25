@@ -203,12 +203,16 @@ def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
                 ys.append(i)
                 accountedv.append(j)
                 #print("appending %d to ys due to vowel match" % i)
-        if ytconsonents[i] != ['']: # skip pure vowels
-            if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
-                #print("found in union")
-                ys.append(i)
-                accountedc.append(j)
-                #print("appending %d to ys due to consonent match" % i)
+
+    for i in checklist:
+        #print(i)
+        for j in checklist:
+            if ytconsonents[i] != ['']: # skip pure vowels
+                if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
+                    #print("found in union")
+                    ys.append(i)
+                    accountedc.append(i)
+                    #print("appending %d to ys due to consonent match" % i)
     uniq_ys = set(ys)
     
     for i in checklist: # use word length here
@@ -277,11 +281,18 @@ def threes():
     # secret = 'काळीज'
     # secret = wordlist[8]
     
+    if 'gcount' not in st.session_state:
+        gcount = 0
+        st.session_state['gcount'] = gcount
+
+    gcount = st.session_state['gcount']
+
     if 'secret' not in st.session_state:
         words = open('subthrees.dat','r').read().split('\n')
         secret = random.sample(words,1)[0]
         st.session_state['secret'] = secret
     secret = st.session_state['secret']
+    #secret = 'कगब'
     #st.write(secret)
 
     copts = []
@@ -304,8 +315,8 @@ def threes():
     
     im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
 
-    corrects = 0
-    for i in range(10):
+    #st.write(gcount)
+    for i in range(gcount):
         cols = st.columns(4)
 
         myc = cols[0].text_input('Guess %s' % str(i+1),'')
@@ -321,6 +332,12 @@ def threes():
             #cols[1].write(foo)  # Original - works
             if foo == 'G' * len(split_clusters(secret)):
                 st.write("you win")
+            
+    st.session_state['gcount'] = st.session_state['gcount'] + 1
+            # gcount = st.session_state['gcount']
+            
+            #st.write(st.session_state['gcount'])
+            #gcount = gcount + 1
 
 
 def fours():
