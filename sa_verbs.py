@@ -1,37 +1,30 @@
-import pandas as pd
+from logging import PlaceHolder
+from numpy.lib.function_base import place
 import streamlit as st
-
 import random
-import numpy as np
-import os
-import random
-import json
-
 import unicodedata
 
-st.title('Marathi Wordle')
-st.sidebar.title("Word Length")
+st.title('Marathi Wordle (length=3)')
+#st.sidebar.title("Word Length")
 
-toDisplay = st.sidebar.radio(
-	"Options",
-	["2", "3", "4"],
-	index=1
-)
+# toDisplay = st.sidebar.radio(
+# 	"Options",
+# 	["2", "3", "4","5"],
+# 	index=1
+# )
 
 wordlist = ['मयत','मकडी','माकड','मगर','मंकड','कमळ','करीम','किस्त्रीम','मंगळ','मालती']
 
 consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 
               'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
               'य', 'र', 'ऱ', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
-# Should map 'ऱ' to 'र'
+# Should map 'ऱ' to 'र' (todo)
 
 vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
           'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
 
 vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, 'ए':7, 'ऐ':8,  'ओ':9, 'औ':10, 
           'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
-
-
 
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
@@ -60,11 +53,7 @@ def split_clusters(s):
 def splitc(word):
     return [i for i in word]
 
-def get_greens(secret_word, test_word):
-    sclust = split_clusters(secret_word)
-    tclust = split_clusters(test_word)
-    if len(sclust)!=len(tclust):
-        print("mismatched length")   # This should not happen
+def get_greens(sclust, tclust):
     
     greens = []
     for i in range(len(sclust)):
@@ -74,17 +63,11 @@ def get_greens(secret_word, test_word):
     return greens
 
 
-def get_blues(secret_word, test_word):
+def get_blues(sclust, tclust):
     '''
-    arguments provided with greens already removed
-    indexing will have to be properly accounted for
+    greens will overwrite any overlapping blues the way we call them.
     '''
     
-    sclust = split_clusters(secret_word)
-    tclust = split_clusters(test_word)
-    if len(sclust)!=len(tclust):
-        print("mismatched length")   # This should not happen
-        
     sblues = []
     tblues = []
     blues = []
@@ -119,17 +102,10 @@ def get_blues(secret_word, test_word):
 #    return list(set(blues))
     return list(blues),sblues,tblues
 
-def get_blues2(secret_word, test_word):
+def get_blues2(sclust, tclust):
     '''
-    arguments provided with greens already removed
-    indexing will have to be properly accounted for
-    OR do it separately afterwards
+    greens will overwrite any overlapping blues the way we call them.
     '''
-    
-    sclust = split_clusters(secret_word)
-    tclust = split_clusters(test_word)
-    if len(sclust)!=len(tclust):
-        print("mismatched length")   # This should not happen
         
     blues2 = []
     supsblues2 = []
@@ -203,6 +179,7 @@ def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
                 ys.append(i)
                 accountedv.append(j)
                 #print("appending %d to ys due to vowel match" % i)
+                break # Now that you have already matched, don't match others
 
     for i in checklist:
         #print(i)
@@ -226,28 +203,32 @@ def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
     return ss
         
 def score(secret,test):
+    '''
+    Add B, G, Y, R in that order the the scoring string
+    '''
     
-    green_array = get_greens(secret,test)
-    blue_array1,svowels, tvowels = get_blues(secret,test)
-    blue_array2,sconsonents, tconsonents = get_blues2(secret,test)
+    sclust = split_clusters(secret)
+    tclust = split_clusters(test)
+    if len(sclust)!=len(tclust):
+        print("mismatched length")   # This should not happen
+
+    green_array = get_greens(sclust,tclust)
+    blue_array1,svowels, tvowels = get_blues(sclust,tclust)
+    blue_array2,sconsonents, tconsonents = get_blues2(sclust,tclust)
     blue_comb = sorted(set(blue_array1) | set(blue_array2))
 
-    ss = 'XXX' # should be word length
-    ss = 'X' * len(split_clusters(secret))
+    ss = 'X' * len(sclust)
     for s in blue_comb:
         ss = ss[:s] + 'B' + ss[s + 1:]
-    for s in green_array:
+    for s in green_array: # This overwrite the B's
         ss = ss[:s] + 'G' + ss[s + 1:]
-    #print(ss, i)
-    if ss.count('X') > 1:
+
+    if ss.count('X') > 1: # No yellows if only one is X (==Red)
         newss = test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents)
     else:
         newss = ss.replace('X','R')
         
     return newss
-
-def twos():
-    return
 
 def notes():
     st.subheader("Notes:")
@@ -263,7 +244,13 @@ def notes():
 
 def todos():
     st.subheader("ToDos:")
+    st.write("Add items to this list")
     st.write("Lots of features.")
+    st.write("Should map 'ऱ' to 'र'")
+    st.write("Compare input words against real words")
+    st.write("Trim word list")
+    st.write("Provide examples with markings")
+    st.write("Counter changes when radio buttons clicked - avoid that")
 
 def details():
     st.subheader("More details:")
@@ -273,36 +260,60 @@ def reveal():
     st.subheader("The word is ... ")
     st.write(st.session_state['secret'])
 
-def threes():
-
-    # column_names = ["1", "2", "3"]
-    # df = pd.DataFrame(columns = column_names)
-
-    # secret = 'काळीज'
-    # secret = wordlist[8]
+def getinput(words,secret,totcols,im):
     
-    if 'gcount' not in st.session_state:
-        gcount = 0
-        st.session_state['gcount'] = gcount
+    placeholder = st.empty()
+    with placeholder.container():
 
-    gcount = st.session_state['gcount']
+        if len(st.session_state['mylist'])>1: 
+            for i in range(1,len(st.session_state['mylist'])):
+                cols = st.columns(totcols)
+                cols[0].write(st.session_state['mylist'][i][0])
+                for j in range(len(st.session_state['mylist'][i][1])):
+                    cols[j+1].image(im[st.session_state['mylist'][i][1][j]])
+        myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
+
+    if myc2:
+        if myc2 in words:
+            myc2score = score(secret,myc2.strip())
+            st.session_state['mylist'].append([myc2,myc2score])
+            if myc2score == 'G' * len(split_clusters(secret)):
+                st.write("you win")
+
+        st.session_state['gcount'] += 1
+        placeholder.empty()
+        getinput(words,secret,totcols,im)
+
+def mainfunc(n):
+
+    totcols = n+1
+    wordfile = "wordslen%d.dat" % n
+    
+    #if 'gcount' not in st.session_state:
+    st.session_state['gcount'] = 1
+    st.session_state['mylist'] = ['a']
 
     if 'secret' not in st.session_state:
-        words = open('subthrees.dat','r').read().split('\n')
+        words = open(wordfile,'r').read().split('\n')
         secret = random.sample(words,1)[0]
         st.session_state['secret'] = secret
+        st.session_state['words'] = words
     secret = st.session_state['secret']
-    #secret = 'कगब'
-    #st.write(secret)
+    words = st.session_state['words']
 
     copts = []
     opts = st.columns(4)
-    copts.append(opts[0].checkbox('Notes',value='True'))
+    
+    #     copts.append(opts[1].checkbox('Reveal'))
+    #     copts.append(opts[2].checkbox('Notes'))
+    # else:
+    
+    copts.append(opts[0].checkbox('Notes'))
     copts.append(opts[1].checkbox('Todo'))
     copts.append(opts[2].checkbox('Details'))
     copts.append(opts[3].checkbox('Reveal'))
+    
 
-    #st.subheader("Notes:")
     if copts[0]:
         notes()
     if copts[1]:
@@ -311,83 +322,31 @@ def threes():
         details()
     if copts[3]:
         reveal()
-    #st.write("For the ... forms.")
     
+    
+        
+
     im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
+    #cols = st.columns(totcols)
 
-    #st.write(gcount)
-    for i in range(gcount):
-        cols = st.columns(4)
+    getinput(words,secret,totcols,im)
+    # st.write("test")
+    # if st.button('New (not yet)'):
+        
+    #     st.session_state['gcount'] = 1
+    #     st.session_state['mylist'] = ['a']
+    #     secret = random.sample(words,1)[0]
+    #     st.session_state['secret'] = secret
+    #     placeholder.empty()
+    #     getinput(words,secret,totcols,im)
 
-        myc = cols[0].text_input('Guess %s' % str(i+1),'')
-
-        if myc:
-            foo = score(secret,myc.strip())
-            # # The HTML rendering does not work properly
-            # df = pd.DataFrame([[foo[i] for i in range(len(foo))]])
-            # s = df.style.applymap(background_color)
-            # cols[1].write(st.dataframe(s))
-            for i in range(len(foo)):
-                cols[i+1].image(im[foo[i]])
-            #cols[1].write(foo)  # Original - works
-            if foo == 'G' * len(split_clusters(secret)):
-                st.write("you win")
-            
-    st.session_state['gcount'] = st.session_state['gcount'] + 1
-            # gcount = st.session_state['gcount']
-            
-            #st.write(st.session_state['gcount'])
-            #gcount = gcount + 1
+#mainfunc(int(toDisplay))
+mainfunc(3)
 
 
-def fours():
-    return
-
-def background_color(val):
-    '''
-    highlight the maximum in a Series yellow.
-    '''
-    #color = 'red' if val == 'मा' else 'black'
-    #is_max = s == s.max()
-
-    if val == 'G':
-        retcol = 'background-color: green'
-    if val == 'B':
-        retcol = 'background-color: blue'
-    if val == 'Y':
-        retcol = 'background-color: yellow'
-    if val == 'R':
-        retcol = 'background-color: red'
-
-    return retcol
-
-unsafe_allow_html=True
-if toDisplay == "2":
-    twos()
-elif toDisplay == "3":
-    threes()
-elif toDisplay == "4":
-    fours()
+# if 'mylist' not in st.session_state:
+#     st.session_state['mylist'] = ['a'] 
+#     st.session_state['count'] = 1
 
 
-############################
-
-# Some styling code from here: https://pandas.pydata.org/pandas-docs/version/0.25.1/user_guide/style.html
-
-
-def color_wrong_red(val):
-    """
-    Takes a scalar and returns a string with
-    the css property `'color: red'` for negative
-    strings, black otherwise.
-    """
-    color = 'red' if val == 'मा' else 'black'
-    return 'color: %s' % color
-
-# df = pd.DataFrame([['म्हा','ता','रा'],['मा','णू','स']])
-
-# #s = df.style.applymap(color_wrong_red)
-# s = df.style.applymap(background_color)
-# #s
-# st.dataframe(s)
 
