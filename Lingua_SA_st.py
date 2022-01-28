@@ -196,7 +196,7 @@ def verblisttable(verb='अस्',pada='परस्मै',lakaara='लट्'
 def fornouns():
 
     copts = []
-    opts = st.beta_columns(3)
+    opts = st.columns(3)
     copts.append(opts[0].checkbox('Notes',value='True'))
     copts.append(opts[1].checkbox('Quiz'))
     copts.append(opts[2].checkbox('Show'))
@@ -236,7 +236,7 @@ def fornouns():
 
         corrects = 0
         for i in range(len(labels)):
-            cols = st.beta_columns(7)
+            cols = st.columns(7)
             vibhaktis.append(cols[0].write(labels[i]))
             for j in range(3):
                 vibhaktis.append(cols[j*2+1].text_input(sup[i*3+j],""))
@@ -289,14 +289,14 @@ def fornouns():
 
 def forverbs():
     copts = []
-    opts = st.beta_columns(3)
+    opts = st.columns(3)
     copts.append(opts[0].checkbox('Notes',value='True'))
     copts.append(opts[1].checkbox('Quiz'))
     copts.append(opts[2].checkbox('Show'))
     #copts.append(opts[3].selectbox('Select noun1',devnouns))
 
     vopts = []
-    sopts = st.beta_columns(3)
+    sopts = st.columns(3)
     vopts.append(sopts[0].selectbox(
         'Select verb',
         list(verbs.keys()),)
@@ -331,7 +331,7 @@ def forverbs():
 
         corrects = 0
         for i in range(len(purush)):
-            cols = st.beta_columns(7)
+            cols = st.columns(7)
             purushas.append(cols[0].write(purush[i]))
             for j in range(3):
                 purushas.append(cols[j*2+1].text_input(तिङ्[pada][i*3+j],""))
