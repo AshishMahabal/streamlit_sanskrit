@@ -92,8 +92,10 @@ def get_blues(sclust, tclust):
             if j in vowels:
                 tblues.append(vowel_subs[j])
                 found_vowel += 1
+                st.session_state['usedv'].append(j)
         if found_vowel == 0:
             tblues.append(1)
+            st.session_state['usedv'].append('।')
     
     for i in range(len(sclust)):
         if sblues[i] == tblues[i]:
@@ -135,6 +137,7 @@ def get_blues2(sclust, tclust):
             if j in consonents:
                 tblues2.append(j)
                 found_consonent += 1
+                st.session_state['usedc'].append(j)
         if found_consonent == 0:
             tblues2.append('')
         suptblues2.append(tblues2)
@@ -284,6 +287,7 @@ def getinput(words,secret,totcols,im):
         placeholder.empty()
         getinput(words,secret,totcols,im)
 
+
 def mainfunc(n):
 
     totcols = n+1
@@ -291,7 +295,9 @@ def mainfunc(n):
     
     #if 'gcount' not in st.session_state:
     st.session_state['gcount'] = 1
-    st.session_state['mylist'] = ['a']
+    st.session_state['mylist'] = ['a'] # we ignore the zeroth later
+    st.session_state['usedc'] = ['X'] # we ignore the zeroth later
+    st.session_state['usedv'] = ['X'] # we ignore the zeroth later
 
     if 'secret' not in st.session_state:
         words = open(wordfile,'r').read().split('\n')
@@ -342,6 +348,18 @@ def mainfunc(n):
 
 #mainfunc(int(toDisplay))
 mainfunc(3)
+usedc = set(st.session_state['usedc'])
+usedv = set(st.session_state['usedv'])
+usedc.remove('X')
+usedv.remove('X')
+untriedc = set(consonents).difference(usedc)
+untriedv = set(vowels).difference(usedv)
+if '।' not in usedv:
+    untriedv.add('।')
+st.write("Untried consonents: ",untriedc)
+st.write("Untried vowels: ",untriedv)
+st.write("Tried consonents: ",usedc)
+st.write("Tried vowels: ",usedv)
 
 
 # if 'mylist' not in st.session_state:
