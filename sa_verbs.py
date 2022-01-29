@@ -21,10 +21,10 @@ consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', '�
 # Should map 'ऱ' to 'र' (todo)
 
 vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
-          'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
+          '।', 'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
 
 vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, 'ए':7, 'ऐ':8,  'ओ':9, 'औ':10, 
-          'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
+          '।':1, 'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
@@ -292,6 +292,7 @@ def mainfunc(n):
 
     totcols = n+1
     wordfile = "wordslen%d.dat" % n
+    secret_wordfile = "subwordslen%d.dat" % n
     
     #if 'gcount' not in st.session_state:
     st.session_state['gcount'] = 1
@@ -300,8 +301,9 @@ def mainfunc(n):
     st.session_state['usedv'] = ['X'] # we ignore the zeroth later
 
     if 'secret' not in st.session_state:
-        words = open(wordfile,'r').read().split('\n')
+        words = open(secret_wordfile,'r').read().split('\n')
         secret = random.sample(words,1)[0]
+        words = open(wordfile,'r').read().split('\n') # all words now
         st.session_state['secret'] = secret
         st.session_state['words'] = words
     secret = st.session_state['secret']
@@ -354,12 +356,36 @@ usedc.remove('X')
 usedv.remove('X')
 untriedc = set(consonents).difference(usedc)
 untriedv = set(vowels).difference(usedv)
-if '।' not in usedv:
-    untriedv.add('।')
-st.write("Untried consonents: ",untriedc)
-st.write("Untried vowels: ",untriedv)
-st.write("Tried consonents: ",usedc)
-st.write("Tried vowels: ",usedv)
+# if '।' not in usedv:
+#     untriedv.add('।')
+st.write("Untried consonents: ")
+
+unusedcl = []
+for c in consonents:
+    if c in untriedc:
+        unusedcl.append(c)
+st.markdown(unusedcl)
+
+unusedvl = []
+st.write("Untried vowels: ")
+for v in vowels:
+    if v in untriedv:
+        unusedvl.append(v)
+st.markdown(unusedvl)
+
+usedcl = []
+st.write("Tried consonents: ")
+for c in consonents:
+    if c in usedc:
+        usedcl.append(c)
+st.markdown(usedcl)
+
+usedvl = []
+st.write("Tried vowels: ")
+for v in vowels:
+    if v in usedv:
+        usedvl.append(v)
+st.markdown(usedvl)
 
 
 # if 'mylist' not in st.session_state:
