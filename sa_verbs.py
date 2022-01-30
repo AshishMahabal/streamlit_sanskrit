@@ -26,6 +26,8 @@ vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ',
 vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, 'ए':7, 'ऐ':8,  'ओ':9, 'औ':10, 
           '।':1, 'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
+vowel_revsub = {1:'अ', 2:'आ', 3:'इ', 4:'ई', 5:'उ', 6:'ऊ', 11:'ऋ', 7:'ए', 8:'ऐ',  9:'ओ', 10:'औ'}
+
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
     Unicode text segmentation algorithm, but probably good enough for
@@ -62,10 +64,36 @@ def get_greens(sclust, tclust):
             
     return greens
 
+def vowel_structure(word):
+    tclust = split_clusters(word)
+    
+    tblues = []
+
+    for i in range(len(tclust)):
+        # remove halant signs
+        tcomps = [j for j in tclust[i] if j != '्']
+        
+        # check for match अ needs to be handled differently as it does not appear as a separate vowel
+        # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
+        # Plus actual vowels
+        
+        #print(scomps,tcomps)
+            
+        found_vowel = 0
+        for j in tcomps:
+            if j in vowels:
+                tblues.append(str(vowel_subs[j]))
+                found_vowel += 1
+        if found_vowel == 0:
+            tblues.append('1')
+    
+#    return list(set(blues))
+    return tblues
 
 def get_blues(sclust, tclust):
     '''
     greens will overwrite any overlapping blues the way we call them.
+    This is for vowels, so not used for the simpler version
     '''
     
     sblues = []
@@ -107,6 +135,7 @@ def get_blues(sclust, tclust):
 def get_blues2(sclust, tclust):
     '''
     greens will overwrite any overlapping blues the way we call them.
+    This is for consonents, so used for both versions.
     '''
         
     blues2 = []
@@ -150,6 +179,10 @@ def get_blues2(sclust, tclust):
     return list(blues2),supsblues2,suptblues2
 
 def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
+    '''
+    This is for the c and s version
+    test_for_yellows_conly(ss,sconsonents,tconsonents) to be used for consonants
+    '''
     #print(ss,svowels,tvowels,sconsonents,tconsonents)
     ysvowels = []
     ysconsonents = []
@@ -216,9 +249,10 @@ def score(secret,test):
         print("mismatched length")   # This should not happen
 
     green_array = get_greens(sclust,tclust)
-    blue_array1,svowels, tvowels = get_blues(sclust,tclust)
+    # blue_array1,svowels, tvowels = get_blues(sclust,tclust)
     blue_array2,sconsonents, tconsonents = get_blues2(sclust,tclust)
-    blue_comb = sorted(set(blue_array1) | set(blue_array2))
+    #blue_comb = sorted(set(blue_array1) | set(blue_array2))
+    blue_comb = sorted(set(blue_array2))
 
     ss = 'X' * len(sclust)
     for s in blue_comb:
@@ -227,23 +261,90 @@ def score(secret,test):
         ss = ss[:s] + 'G' + ss[s + 1:]
 
     if ss.count('X') > 1: # No yellows if only one is X (==Red)
-        newss = test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents)
+        #newss = test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents)
+        newss = test_for_yellows_conly(ss,sconsonents,tconsonents)
     else:
         newss = ss.replace('X','R')
         
     return newss
 
+def test_for_yellows_conly(ss,sconsonents,tconsonents):
+    '''
+    This is for consonents only
+    '''
+    #print(ss,svowels,tvowels,sconsonents,tconsonents)
+
+    ysconsonents = []
+    ytconsonents = []
+    checklist = []
+    for i in range(len(sconsonents)):
+        if ss[i] == 'X':
+            ysconsonents.append(sconsonents[i])
+            ytconsonents.append(tconsonents[i])
+            checklist.append(i)
+        else:
+            ysconsonents.append(['']) # changed this from 0 for set union to work
+            ytconsonents.append(['']) # changed this from 0 for set union to work
+            
+    #print(ss,ysvowels,ytvowels,ysconsonents,ytconsonents)
+    #print(checklist)
+    
+    ys = []
+    accountedc = [] # this is for the consonants
+    # for i in checklist:
+    #     #print(i)
+    #     for j in checklist:
+    #         if j not in accountedv and ytvowels[i] == ysvowels[j]:
+    #             ys.append(i)
+    #             accountedv.append(j)
+    #             #print("appending %d to ys due to vowel match" % i)
+    #             break # Now that you have already matched, don't match others
+
+    for i in checklist:
+        #print(i)
+        for j in checklist:
+            if ytconsonents[i] != ['']: # skip pure vowels
+                if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
+                    #print("found in union")
+                    ys.append(i)
+                    accountedc.append(i)
+                    #print("appending %d to ys due to consonent match" % i)
+    uniq_ys = set(ys)
+    
+    for i in checklist: # use word length here
+        if i in uniq_ys:
+            ss = ss[:i] + 'Y' + ss[i + 1:]
+        else:
+            ss = ss[:i] + 'R' + ss[i + 1:]
+            
+    #print(ss)
+    
+    return ss
+
+
 def notes():
     st.subheader("Notes:")
-    st.write("Choose word length on the left (only 3 RIGHT NOW).\
-         Enter words with that length and hit tab. Advance to next fields yourself.\
-         Minimal error checking exists for now.")
+    st.write("Enter a Marathi word of suggested length and hit tab or enter. The words are\
+        checked against a longer list of possible word (yet likely incomplete).")
     st.write("Color code:")
-    st.write("Green means that letter is correct (position, consonant, and vowel)")
-    st.write("Blue means either consonant and vowel - or both - at that position match.")
-    st.write("Yellow means either consonant or vowel - or both - at that position matches that of a letter in the code.")
-    st.write("Red means neither consonant nor vowel is right at that position.")
-    st.write("")
+    st.write("Green means that letter is correct (position, consonant, and vowel)\
+         e.g. क्षे for क्षे, स for स etc. If the secret is 'प्रकाश' and your guess is 'आकाश'\
+         you will get greens for the second and third places.")
+    st.write("Blue means either consonant and vowel - or both - at that position match\
+         e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc. If the secret is 'भविष्य'\
+         and your guess is 'भरीत', you will get a green for the first (full match)\
+         and a blue for the last (the akar matches).")
+    st.write("Yellow means either consonant or vowel - or both - at that position matches\
+         that of a letter in the code at another position\
+         e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc.\
+         Blue takes precedence over yellow i.e. if you get a blue in one position because\
+         of a partial match, you will not get a yellow for it no matter what. Thus if\
+         the secret is 'भविष्य' and the guess is 'निर्भय', no greens because no perfect match,\
+         then a blue for the third because they are both akar, and yellows for first and\
+         second because ikar of नि matches that of वि and akar of र्भ matches that of भ.")
+    st.write("Red means neither consonant nor vowel is right at that position.\
+         That is for all positions that are not green, blue, or red. ")
+    st.write("More examples will be added under 'Details'.")
 
 def todos():
     st.subheader("ToDos:")
@@ -263,7 +364,7 @@ def reveal():
     st.subheader("The word is ... ")
     st.write(st.session_state['secret'])
 
-def getinput(words,secret,totcols,im):
+def getinput(words,secret,totcols,im,onemore):
     
     placeholder = st.empty()
     with placeholder.container():
@@ -274,18 +375,25 @@ def getinput(words,secret,totcols,im):
                 cols[0].write(st.session_state['mylist'][i][0])
                 for j in range(len(st.session_state['mylist'][i][1])):
                     cols[j+1].image(im[st.session_state['mylist'][i][1][j]])
-        myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
+        if onemore:
+            myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
+        else:
+            myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
 
     if myc2:
         if myc2 in words:
             myc2score = score(secret,myc2.strip())
             st.session_state['mylist'].append([myc2,myc2score])
-            if myc2score == 'G' * len(split_clusters(secret)):
-                st.write("you win")
+            # if myc2score == 'G' * len(split_clusters(secret)):
+            #     st.write("you win")
 
         st.session_state['gcount'] += 1
         placeholder.empty()
-        getinput(words,secret,totcols,im)
+        if myc2 in words and myc2score == 'G' * len(split_clusters(secret)):
+                st.write("you win")
+                getinput(words,secret,totcols,im,0)
+        else:
+            getinput(words,secret,totcols,im,1)
 
 
 def mainfunc(n):
@@ -308,6 +416,13 @@ def mainfunc(n):
         st.session_state['words'] = words
     secret = st.session_state['secret']
     words = st.session_state['words']
+    sshape = vowel_structure(secret)
+    rsshape = []
+    for i in sshape:
+        rsshape.append(vowel_revsub[int(i)])
+    st.markdown("Vowel shape for the word is ")
+    st.markdown(''.join(rsshape))
+    #secret = 'प्रकाश'
 
     copts = []
     opts = st.columns(4)
@@ -337,7 +452,7 @@ def mainfunc(n):
     im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
     #cols = st.columns(totcols)
 
-    getinput(words,secret,totcols,im)
+    getinput(words,secret,totcols,im,1)
     # st.write("test")
     # if st.button('New (not yet)'):
         
@@ -366,12 +481,12 @@ for c in consonents:
         unusedcl.append(c)
 st.markdown(unusedcl)
 
-unusedvl = []
-st.write("Untried vowels: ")
-for v in vowels:
-    if v in untriedv:
-        unusedvl.append(v)
-st.markdown(unusedvl)
+# unusedvl = []
+# st.write("Untried vowels: ")
+# for v in vowels:
+#     if v in untriedv:
+#         unusedvl.append(v)
+# st.markdown(unusedvl)
 
 usedcl = []
 st.write("Tried consonents: ")
@@ -380,12 +495,12 @@ for c in consonents:
         usedcl.append(c)
 st.markdown(usedcl)
 
-usedvl = []
-st.write("Tried vowels: ")
-for v in vowels:
-    if v in usedv:
-        usedvl.append(v)
-st.markdown(usedvl)
+# usedvl = []
+# st.write("Tried vowels: ")
+# for v in vowels:
+#     if v in usedv:
+#         usedvl.append(v)
+# st.markdown(usedvl)
 
 
 # if 'mylist' not in st.session_state:
