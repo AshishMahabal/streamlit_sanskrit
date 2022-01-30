@@ -420,16 +420,18 @@ def getinput(words,secret,totcols,im,onemore):
                 cols = st.columns(totcols)
                 cols[0].write(st.session_state['mylist'][i][0])
                 for j in range(len(st.session_state['mylist'][i][1])):
-                    cols[j+1].image(im[st.session_state['mylist'][i][1][j]])
+                    cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
         if onemore:
             myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
         else:
             myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
+            st.balloons()
 
     if myc2:
         #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
         if myc2 in words:
-            logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
+            #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
+            logfile = open("logdir/userlog.txt", "a")
             myc2score = score(secret,myc2.strip())
             st.session_state['mylist'].append([myc2,myc2score])
             logfile.write("%s %s 1 %s\n" % (st.session_state['sessionid'],myc2,myc2score))
@@ -438,7 +440,8 @@ def getinput(words,secret,totcols,im,onemore):
             #     st.write("you win")
         else: # For now allowing all words
             if len(split_clusters(myc2.strip())) == len(split_clusters(secret)):
-                logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
+                #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
+                logfile = open("logdir/userlog.txt", "a")
                 myc2score = score(secret,myc2.strip())
                 st.session_state['mylist'].append([myc2,myc2score])
                 logfile.write("%s %s 0 %s\n" % (st.session_state['sessionid'],myc2,myc2score))
