@@ -91,6 +91,32 @@ def vowel_structure(word):
 #    return list(set(blues))
     return tblues
 
+def consonant_structure(word):
+    '''
+    Get consonant structure
+    '''
+    tclust = split_clusters(word)  
+    c_struc = []
+    for i in range(len(tclust)):
+
+        tblues2 = []
+
+        tcomps = [j for j in tclust[i] if j != '्']
+        # check for match अ needs to be handled differently as it does not appear as a separate vowel
+        # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
+        # Plus actual vowels
+            
+        found_consonent = 0
+        for j in tcomps:
+            if j in consonents:
+                tblues2.append(j)
+                found_consonent += 1
+        tblues2.append(found_consonent)
+        c_struc.append(str(len(tblues2)-1))
+    
+#    return list(set(blues))
+    return c_struc
+
 def get_blues(sclust, tclust):
     '''
     greens will overwrite any overlapping blues the way we call them.
@@ -437,6 +463,12 @@ def mainfunc(n):
         rsshape.append(vowel_revsub[int(i)])
     st.markdown("Vowel shape for the word is ")
     st.markdown(''.join(rsshape))
+    st.markdown("Consonants in each letter are ")
+    cshape = consonant_structure(secret)
+    # for i in cshape:
+    #     c_struc = consonant_structure(secret)
+    st.markdown(''.join(cshape))
+    #st.markdown(c_struc)
     st.markdown(st.session_state['sessionid'])
     #secret = 'प्रकाश'
 
