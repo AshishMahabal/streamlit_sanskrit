@@ -351,26 +351,45 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
 
 def notes():
     st.subheader("Notes:")
-    st.write("Enter a Marathi word of suggested length and hit tab or enter. The words are\
-        checked against a longer list of possible word (yet likely incomplete).")
-    st.write("Color code:")
-    st.write("Green means that letter is correct (position, consonant, and vowel)\
-         e.g. क्षे for क्षे, स for स etc. If the secret is 'प्रकाश' and your guess is 'आकाश'\
-         you will get greens for the second and third places.")
-    st.write("Blue means either consonant and vowel - or both - at that position match\
-         e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc. If the secret is 'भविष्य'\
-         and your guess is 'भरीत', you will get a green for the first (full match)\
-         and a blue for the last (the akar matches).")
-    st.write("Yellow means either consonant or vowel - or both - at that position matches\
-         that of a letter in the code at another position\
-         e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc.\
-         Blue takes precedence over yellow i.e. if you get a blue in one position because\
-         of a partial match, you will not get a yellow for it no matter what. Thus if\
-         the secret is 'भविष्य' and the guess is 'निर्भय', no greens because no perfect match,\
-         then a blue for the third because they are both akar, and yellows for first and\
-         second because ikar of नि matches that of वि and akar of र्भ matches that of भ.")
-    st.write("Red means neither consonant nor vowel is right at that position.\
-         That is for all positions that are not green, blue, or red. ")
+    st.markdown("Enter a Marathi word of suggested length and hit tab or enter.")
+    st.markdown("> The vowel shape indicates the vowels in the word e.g. अअआ could mean अकरा or बछडा etc.")
+    st.markdown("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
+        the first is a pure vowel, the second is a single consonant (with a vowel), and the\
+        third is a two-consonant combo (with a vowel) e.g. अभद्र or आरक्त or अलिप्त.\
+        ")
+    st.markdown("Everything is modulo an anusvar meaning where the codes above suggest a म, it could be मं\
+        and where it suggests अ it could be अं.")
+    st.markdown("> - Green means that that letter is correct in all respects (position, consonant, and vowel.")
+    st.markdown("> - Blue indicates that at least one consonant matches at that position\
+         e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc.")  
+    st.markdown("> -  Yellow reveals that at least one consonant at that position matches one at another position.\
+        ")
+    st.markdown("> - Red suggests that that consonant may not match anything in the word. Blue and Yellow take\
+        precedence over Red, so the following situation is possible: the secret word is\
+        कर्तव्य and you have guessed कातरी. The का gives you a Blue because क matches, the त also gives\
+        you a Blue because it matches the त in र् + त् and finally the री gives you a Red despite the \
+        fact that the र् matches that in र्त because something has already matched the second position.")
+    # st.write("Enter a Marathi word of suggested length and hit tab or enter. The words are\
+    #     checked against a longer list of possible word (yet likely incomplete).")
+    # st.write("Color code:")
+    # st.write("Green means that letter is correct (position, consonant, and vowel)\
+    #      e.g. क्षे for क्षे, स for स etc. If the secret is 'प्रकाश' and your guess is 'आकाश'\
+    #      you will get greens for the second and third places.")
+    # st.write("Blue means either consonant and vowel - or both - at that position match\
+    #      e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc. If the secret is 'भविष्य'\
+    #      and your guess is 'भरीत', you will get a green for the first (full match)\
+    #      and a blue for the last (the akar matches).")
+    # st.write("Yellow means either consonant or vowel - or both - at that position matches\
+    #      that of a letter in the code at another position\
+    #      e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc.\
+    #      Blue takes precedence over yellow i.e. if you get a blue in one position because\
+    #      of a partial match, you will not get a yellow for it no matter what. Thus if\
+    #      the secret is 'भविष्य' and the guess is 'निर्भय', no greens because no perfect match,\
+    #      then a blue for the third because they are both akar, and yellows for first and\
+    #      second because ikar of नि matches that of वि and akar of र्भ matches that of भ.")
+    # st.write("Red means neither consonant nor vowel is right at that position.\
+    #      That is for all positions that are not green, blue, or red. ")
+    st.write("When you get all Greens, you win.")
     st.write("More examples will be added under 'Details'.")
 
 def todos():
