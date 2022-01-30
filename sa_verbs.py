@@ -3,6 +3,7 @@ from numpy.lib.function_base import place
 import streamlit as st
 import random
 import unicodedata
+import string
 
 st.title('Marathi Wordle (length=3)')
 #st.sidebar.title("Word Length")
@@ -381,12 +382,22 @@ def getinput(words,secret,totcols,im,onemore):
             myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
 
     if myc2:
+        #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
         if myc2 in words:
+            logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
             myc2score = score(secret,myc2.strip())
             st.session_state['mylist'].append([myc2,myc2score])
+            logfile.write("%s %s 1 %s\n" % (st.session_state['sessionid'],myc2,myc2score))
+            logfile.close()
             # if myc2score == 'G' * len(split_clusters(secret)):
             #     st.write("you win")
-
+        else: # For now allowing all words
+            if len(split_clusters(myc2.strip())) == len(split_clusters(secret)):
+                logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
+                myc2score = score(secret,myc2.strip())
+                st.session_state['mylist'].append([myc2,myc2score])
+                logfile.write("%s %s 0 %s\n" % (st.session_state['sessionid'],myc2,myc2score))
+                logfile.close()
         st.session_state['gcount'] += 1
         placeholder.empty()
         if myc2 in words and myc2score == 'G' * len(split_clusters(secret)):
@@ -409,6 +420,10 @@ def mainfunc(n):
     st.session_state['usedv'] = ['X'] # we ignore the zeroth later
 
     if 'secret' not in st.session_state:
+        idl1 = random.choice(string.ascii_uppercase)
+        idl2 = random.choice(string.ascii_uppercase)
+        idn1 = str("%0d" % random.randint(0,100000))
+        st.session_state['sessionid'] = idl1+idl2+idn1
         words = open(secret_wordfile,'r').read().split('\n')
         secret = random.sample(words,1)[0]
         words = open(wordfile,'r').read().split('\n') # all words now
@@ -422,6 +437,7 @@ def mainfunc(n):
         rsshape.append(vowel_revsub[int(i)])
     st.markdown("Vowel shape for the word is ")
     st.markdown(''.join(rsshape))
+    st.markdown(st.session_state['sessionid'])
     #secret = 'प्रकाश'
 
     copts = []
