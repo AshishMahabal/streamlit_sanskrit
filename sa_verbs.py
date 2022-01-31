@@ -78,8 +78,6 @@ def vowel_structure(word):
         # check for match अ needs to be handled differently as it does not appear as a separate vowel
         # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
         # Plus actual vowels
-        
-        #print(scomps,tcomps)
             
         found_vowel = 0
         for j in tcomps:
@@ -103,9 +101,6 @@ def consonant_structure(word):
         tblues2 = []
 
         tcomps = [j for j in tclust[i] if j != '्']
-        # check for match अ needs to be handled differently as it does not appear as a separate vowel
-        # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
-        # Plus actual vowels
             
         found_consonent = 0
         for j in tcomps:
@@ -115,7 +110,6 @@ def consonant_structure(word):
         tblues2.append(found_consonent)
         c_struc.append(str(len(tblues2)-1))
     
-#    return list(set(blues))
     return c_struc
 
 def get_blues(sclust, tclust):
@@ -157,7 +151,6 @@ def get_blues(sclust, tclust):
         if sblues[i] == tblues[i]:
             blues.append(i)
     
-#    return list(set(blues))
     return list(blues),sblues,tblues
 
 def get_blues2(sclust, tclust):
@@ -199,11 +192,9 @@ def get_blues2(sclust, tclust):
             tblues2.append('')
         suptblues2.append(tblues2)
     
-        #print(sblues2,tblues2)
         if set(sblues2).intersection(set(tblues2)):
             blues2.append(i)
     
-#    return list(set(blues))
     return list(blues2),supsblues2,suptblues2
 
 def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
@@ -229,9 +220,6 @@ def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
             ysconsonents.append(['']) # changed this from 0 for set union to work
             ytvowels.append(0)
             ytconsonents.append(['']) # changed this from 0 for set union to work
-            
-    #print(ss,ysvowels,ytvowels,ysconsonents,ytconsonents)
-    #print(checklist)
     
     ys = []
     accountedv = [] # which of secret words letters already have a yellow
@@ -261,8 +249,6 @@ def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
             ss = ss[:i] + 'Y' + ss[i + 1:]
         else:
             ss = ss[:i] + 'R' + ss[i + 1:]
-            
-    #print(ss)
     
     return ss
         
@@ -300,7 +286,6 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
     '''
     This is for consonents only
     '''
-    #print(ss,svowels,tvowels,sconsonents,tconsonents)
 
     ysconsonents = []
     ytconsonents = []
@@ -313,20 +298,9 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
         else:
             ysconsonents.append(['']) # changed this from 0 for set union to work
             ytconsonents.append(['']) # changed this from 0 for set union to work
-            
-    #print(ss,ysvowels,ytvowels,ysconsonents,ytconsonents)
-    #print(checklist)
     
     ys = []
     accountedc = [] # this is for the consonants
-    # for i in checklist:
-    #     #print(i)
-    #     for j in checklist:
-    #         if j not in accountedv and ytvowels[i] == ysvowels[j]:
-    #             ys.append(i)
-    #             accountedv.append(j)
-    #             #print("appending %d to ys due to vowel match" % i)
-    #             break # Now that you have already matched, don't match others
 
     for i in checklist:
         #print(i)
@@ -344,8 +318,6 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
             ss = ss[:i] + 'Y' + ss[i + 1:]
         else:
             ss = ss[:i] + 'R' + ss[i + 1:]
-            
-    #print(ss)
     
     return ss
 
@@ -363,50 +335,32 @@ def notes():
     st.markdown("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
         the first is a pure vowel, the second is a single consonant (with a vowel), and the\
         third is a two-consonant combo (with a vowel) e.g. `अभद्र` or `आरक्त` or `अलिप्त`.\
-        Please note that `क्ष (=क् + श)` and `ज्ञ (=ज् + ञ)` are both conjuncts of size 2.")
-    st.markdown("Everything is modulo an anusvar meaning where the codes above suggest a `म`, it could be `मं`\
+        Please note that `क्ष (= क् + ष)` and `ज्ञ (= ज् + ञ)` are both conjuncts of size 2.")
+    st.markdown("> Everything is modulo an anusvar meaning where the codes above suggest a `म`, it could be `मं`\
         and where it suggests `अ` it could be `अं`.")
+    st.markdown("> Visargas `:`, ardha-chandra `ॅ` and `ॉ`, chandra-bindu `ॅं` do not appear in\
+         the secret words, nor are they halant (ending in `्`).")
     cnote(im['G'],20,"Green means that that letter is correct in all respects (position, consonant, and vowel.")
     cnote(im['B'],20, "Blue indicates that at least one consonant matches at that position\
-         e.g. `क` for `क्षे (=क्+शे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc.")
+         e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc.")
     cnote(im['Y'],20,"Yellow reveals that at least one consonant at that position matches one at another position.")
     cnote(im['R'],20, "Red suggests that that consonant may not match anything in the word. Blue and Yellow take\
         precedence over Red, so the following situation is possible: the secret word is\
         `कर्तव्य` and you have guessed `कातरी`. The `का` gives you a Blue because `क` matches, the `त` also gives\
         you a Blue because it matches the `त` in `र् + त्` and finally the `री` gives you a Red despite the \
         fact that the `र्` matches that in `र्त` because something has already matched the second position.")
-    # st.write("Enter a Marathi word of suggested length and hit tab or enter. The words are\
-    #     checked against a longer list of possible word (yet likely incomplete).")
-    # st.write("Color code:")
-    # st.write("Green means that letter is correct (position, consonant, and vowel)\
-    #      e.g. क्षे for क्षे, स for स etc. If the secret is 'प्रकाश' and your guess is 'आकाश'\
-    #      you will get greens for the second and third places.")
-    # st.write("Blue means either consonant and vowel - or both - at that position match\
-    #      e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc. If the secret is 'भविष्य'\
-    #      and your guess is 'भरीत', you will get a green for the first (full match)\
-    #      and a blue for the last (the akar matches).")
-    # st.write("Yellow means either consonant or vowel - or both - at that position matches\
-    #      that of a letter in the code at another position\
-    #      e.g. क for क्षे (=क्+शे), के for क्षे, प for पु, इ for ओ etc.\
-    #      Blue takes precedence over yellow i.e. if you get a blue in one position because\
-    #      of a partial match, you will not get a yellow for it no matter what. Thus if\
-    #      the secret is 'भविष्य' and the guess is 'निर्भय', no greens because no perfect match,\
-    #      then a blue for the third because they are both akar, and yellows for first and\
-    #      second because ikar of नि matches that of वि and akar of र्भ matches that of भ.")
-    # st.write("Red means neither consonant nor vowel is right at that position.\
-    #      That is for all positions that are not green, blue, or red. ")
-    st.write("When you get all Greens, you win.")
+    st.write("> When you get all Greens, you win.")
     st.write("More examples will be added under 'Details'.")
 
 def todos():
     st.subheader("ToDos:")
-    st.write("Add items to this list")
-    st.write("Lots of features.")
-    st.write("Should map 'ऱ' to 'र'")
-    st.write("Compare input words against real words")
-    st.write("Trim word list")
-    st.write("Provide examples with markings")
-    st.write("Counter changes when radio buttons clicked - avoid that")
+    st.markdown("- Add items to this list")
+    st.markdown("- Lots of features.")
+    st.markdown("- Should map 'ऱ' to 'र'")
+    st.markdown("- Compare input words against real words")
+    st.markdown("- Trim word list")
+    st.markdown("- Provide examples with markings")
+    st.markdown("- ~~Counter changes when radio buttons clicked - avoid that~~")
 
 def details():
     st.subheader("More details:")
@@ -432,6 +386,7 @@ def getinput(words,secret,totcols,im,onemore):
         else:
             myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
             st.balloons()
+            myc2 = ''
 
     if myc2:
         #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
@@ -460,14 +415,12 @@ def getinput(words,secret,totcols,im,onemore):
         else:
             getinput(words,secret,totcols,im,1)
 
-
 def mainfunc(n):
 
     totcols = n+1
     wordfile = "wordslen%d.dat" % n
     secret_wordfile = "subwordslen%d.dat" % n
     
-    #if 'gcount' not in st.session_state:
     st.session_state['gcount'] = 1
     st.session_state['mylist'] = ['a'] # we ignore the zeroth later
     st.session_state['usedc'] = ['X'] # we ignore the zeroth later
@@ -489,28 +442,20 @@ def mainfunc(n):
     rsshape = []
     for i in sshape:
         rsshape.append(vowel_revsub[int(i)])
-    st.markdown("Vowel shape for the word is ")
-    st.markdown(''.join(rsshape))
-    st.markdown("Consonants in each letter are ")
+    st.markdown("शब्दातील स्वरक्रम `%s`" % ''.join(rsshape))
+
     cshape = consonant_structure(secret)
-    # for i in cshape:
-    #     c_struc = consonant_structure(secret)
-    st.markdown(''.join(cshape))
-    #st.markdown(c_struc)
-    st.markdown(st.session_state['sessionid'])
+    str1 = "शब्दातील व्यंजनांची संख्या - अंक्षरागणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य त्त्व)" % ''.join(cshape)
+    st.markdown(str1)
+
     #secret = 'प्रकाश'
 
     copts = []
     opts = st.columns(4)
-    
-    #     copts.append(opts[1].checkbox('Reveal'))
-    #     copts.append(opts[2].checkbox('Notes'))
-    # else:
-    
-    copts.append(opts[0].checkbox('Notes'))
-    copts.append(opts[1].checkbox('Todo'))
-    copts.append(opts[2].checkbox('Details'))
-    copts.append(opts[3].checkbox('Reveal'))
+    copts.append(opts[0].checkbox('टिपा'))
+    copts.append(opts[1].checkbox('बाकी'))
+    copts.append(opts[2].checkbox('तपशील'))
+    copts.append(opts[3].checkbox('उत्तर'))
     
 
     if copts[0]:
@@ -521,23 +466,10 @@ def mainfunc(n):
         details()
     if copts[3]:
         reveal()
-    
-    
-        
 
-    
-    #cols = st.columns(totcols)
 
     getinput(words,secret,totcols,im,1)
-    # st.write("test")
-    # if st.button('New (not yet)'):
-        
-    #     st.session_state['gcount'] = 1
-    #     st.session_state['mylist'] = ['a']
-    #     secret = random.sample(words,1)[0]
-    #     st.session_state['secret'] = secret
-    #     placeholder.empty()
-    #     getinput(words,secret,totcols,im)
+
 
 #mainfunc(int(toDisplay))
 mainfunc(3)
@@ -547,9 +479,7 @@ usedc.remove('X')
 usedv.remove('X')
 untriedc = set(consonents).difference(usedc)
 untriedv = set(vowels).difference(usedv)
-# if '।' not in usedv:
-#     untriedv.add('।')
-st.write("Untried consonents: ")
+st.write("न वापरलेली व्यंजने: ")
 
 unusedcl = []
 for c in consonents:
@@ -557,31 +487,9 @@ for c in consonents:
         unusedcl.append(c)
 st.markdown(unusedcl)
 
-# unusedvl = []
-# st.write("Untried vowels: ")
-# for v in vowels:
-#     if v in untriedv:
-#         unusedvl.append(v)
-# st.markdown(unusedvl)
-
 usedcl = []
-st.write("Tried consonents: ")
+st.write("वापरलेली व्यंजने: ")
 for c in consonents:
     if c in usedc:
         usedcl.append(c)
 st.markdown(usedcl)
-
-# usedvl = []
-# st.write("Tried vowels: ")
-# for v in vowels:
-#     if v in usedv:
-#         usedvl.append(v)
-# st.markdown(usedvl)
-
-
-# if 'mylist' not in st.session_state:
-#     st.session_state['mylist'] = ['a'] 
-#     st.session_state['count'] = 1
-
-
-
