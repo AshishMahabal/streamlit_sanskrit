@@ -389,11 +389,18 @@ def getinput(words,secret,totcols,im,onemore):
             for i in range(1,len(st.session_state['mylist'])):
                 cols = st.columns(totcols)
                 cols[0].write(st.session_state['mylist'][i][0])
-                for j in range(len(st.session_state['mylist'][i][1])):
-                    #cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
-                    tcolor = st.session_state['mylist'][i][1][j]
-                    with cols[j+1]:
-                        st.markdown("%s%s" % (imunicode[tcolor],tcolor))
+                forcol1 = ''
+                forcol1 = forcol1 + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
+                forcol1 = forcol1 + '\n' + ''.join([st.session_state['mylist'][i][1][j] for j in range(len(st.session_state['mylist'][i][1]))])
+                # with cols[0]:
+                #     st.markdown("%5s %s" % (st.session_state['mylist'][i][0],forcol1))
+                with cols[1]:
+                    st.markdown(forcol1)
+                # for j in range(len(st.session_state['mylist'][i][1])):
+                #     #cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
+                #     tcolor = st.session_state['mylist'][i][1][j]
+                #     with cols[j+1]:
+                #         st.markdown("%s%s" % (imunicode[tcolor],tcolor))
         if onemore:
             col1, col2, col3 = st.columns([10,10,10])
             with col1:
@@ -453,7 +460,12 @@ def getinput(words,secret,totcols,im,onemore):
 
 def mainfunc(n):
 
-    totcols = n+1
+    #totcols = n+1
+    # totcols = [3]
+    # for i in range(n):
+    #     totcols.append(1)
+    # totcols.append(6)
+    totcols = [4,7,20]
     wordfile = "wordslen%d.dat" % n
     secret_wordfile = "subwordslen%d.dat" % n
     
@@ -481,7 +493,7 @@ def mainfunc(n):
     st.markdown("शब्दातील स्वरक्रम `%s`" % ''.join(rsshape))
 
     cshape = consonant_structure(secret)
-    str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य त्त्व)" % ''.join(cshape)
+    str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
     st.markdown(str1)
 
     #secret = 'प्रकाश'
