@@ -4,8 +4,10 @@ import streamlit as st
 import random
 import unicodedata
 import string
+import streamlit_modal as modal
+import streamlit.components.v1 as components
 
-st.title('Marathi Wordle (length=3)')
+st.title('शब्दखुूळ (तिनाक्षरी)')
 #st.sidebar.title("Word Length")
 
 # toDisplay = st.sidebar.radio(
@@ -28,7 +30,13 @@ vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, '�
           '।':1, 'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 vowel_revsub = {1:'अ', 2:'आ', 3:'इ', 4:'ई', 5:'उ', 6:'ऊ', 11:'ऋ', 7:'ए', 8:'ऐ',  9:'ओ', 10:'औ'}
+
+GS = '🟩'
+RS = '🟥'
+YS = '🟨'
+BS = '🟦'
 im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
+imunicode = {'R':RS,'G':GS,'B':BS,'Y':YS}
 
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
@@ -261,6 +269,8 @@ def score(secret,test):
     tclust = split_clusters(test)
     if len(sclust)!=len(tclust):
         print("mismatched length")   # This should not happen
+    
+    
 
     green_array = get_greens(sclust,tclust)
     # blue_array1,svowels, tvowels = get_blues(sclust,tclust)
@@ -380,12 +390,32 @@ def getinput(words,secret,totcols,im,onemore):
                 cols = st.columns(totcols)
                 cols[0].write(st.session_state['mylist'][i][0])
                 for j in range(len(st.session_state['mylist'][i][1])):
-                    cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
+                    #cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
+                    tcolor = st.session_state['mylist'][i][1][j]
+                    with cols[j+1]:
+                        st.markdown("%s%s" % (imunicode[tcolor],tcolor))
         if onemore:
-            myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
+            col1, col2, col3 = st.columns([10,10,10])
+            with col1:
+        #st.image(imname, width=imwidth)
+                myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
         else:
-            myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
             st.balloons()
+            col1, mid, col2, col3 = st.columns([8,1,2,4])
+            with col1:
+                myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
+            modalstr = ''
+            # modal.open()
+            # if modal.is_open():
+            #     with modal.container():
+            with col2:
+                st.write("Share")
+            for i in range(1,len(st.session_state['mylist'])):
+                modalstr = modalstr + ''.join([imunicode[k] for k in st.session_state['mylist'][i][1]]) + '\n'
+            with col3:
+                st.code(modalstr)
+
+        #st.code("copy to clipboard")
             myc2 = ''
 
     if myc2:
@@ -400,7 +430,13 @@ def getinput(words,secret,totcols,im,onemore):
             # if myc2score == 'G' * len(split_clusters(secret)):
             #     st.write("you win")
         else: # For now allowing all words
-            if len(split_clusters(myc2.strip())) == len(split_clusters(secret)):
+            ttclust = split_clusters(myc2.strip())
+            goodstr=1
+            for j in range(len(ttclust)):
+                for k in range(len(ttclust[j])):
+                    if ord(ttclust[j][k]) < 2304 or ord(ttclust[j][k]) > 2431:
+                        goodstr = 0
+            if len(ttclust) == len(split_clusters(secret)) and goodstr == 1:
                 #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
                 logfile = open("logdir/userlog.txt", "a")
                 myc2score = score(secret,myc2.strip())
@@ -445,7 +481,7 @@ def mainfunc(n):
     st.markdown("शब्दातील स्वरक्रम `%s`" % ''.join(rsshape))
 
     cshape = consonant_structure(secret)
-    str1 = "शब्दातील व्यंजनांची संख्या - अंक्षरागणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य त्त्व)" % ''.join(cshape)
+    str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य त्त्व)" % ''.join(cshape)
     st.markdown(str1)
 
     #secret = 'प्रकाश'
@@ -493,3 +529,5 @@ for c in consonents:
     if c in usedc:
         usedcl.append(c)
 st.markdown(usedcl)
+
+
