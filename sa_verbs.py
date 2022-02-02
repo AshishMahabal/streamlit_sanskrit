@@ -490,30 +490,37 @@ def mainfunc(n):
     rsshape = []
     for i in sshape:
         rsshape.append(vowel_revsub[int(i)])
-    st.markdown("शब्दातील स्वरक्रम `%s`" % ''.join(rsshape))
-
+    
     cshape = consonant_structure(secret)
-    str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
-    st.markdown(str1)
+    st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजनसंख्या `%s`" % (''.join(rsshape),''.join(cshape)))
+    #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
+    #st.markdown(str1)
 
     #secret = 'प्रकाश'
 
     copts = []
-    opts = st.columns(4)
+    opts = st.columns([4,4,4,6])
     copts.append(opts[0].checkbox('टिपा'))
-    copts.append(opts[1].checkbox('बाकी'))
-    copts.append(opts[2].checkbox('तपशील'))
-    copts.append(opts[3].checkbox('उत्तर'))
+    copts.append(opts[1].checkbox('तपशील'))
+    copts.append(opts[2].checkbox('उत्तर'))
+    #copts.append(opts[3].checkbox('बाकी'))
+
+    # if st.checkbox('टिपा'):
+    #     notes()
+    # if st.checkbox('तपशील'):
+    #     details()
+    # if st.checkbox('उत्तर'):
+    #     reveal()
     
 
     if copts[0]:
         notes()
     if copts[1]:
-        todos()
-    if copts[2]:
         details()
-    if copts[3]:
+    if copts[2]:
         reveal()
+    # if copts[3]:
+    #     todos()
 
 
     getinput(words,secret,totcols,im,1)
@@ -527,19 +534,28 @@ usedc.remove('X')
 usedv.remove('X')
 untriedc = set(consonents).difference(usedc)
 untriedv = set(vowels).difference(usedv)
-st.write("न वापरलेली व्यंजने: ")
 
-unusedcl = []
+st.write("`वापरलेली` आणि न वापरलेली व्यंजने: ")
+uandunusedcl = ''
 for c in consonents:
     if c in untriedc:
-        unusedcl.append(c)
-st.markdown(unusedcl)
+        uandunusedcl += '%s ' % c
+    else:
+        uandunusedcl += '`%s` ' % c
+st.markdown(uandunusedcl)
 
-usedcl = []
-st.write("वापरलेली व्यंजने: ")
-for c in consonents:
-    if c in usedc:
-        usedcl.append(c)
-st.markdown(usedcl)
+# st.write("न वापरलेली व्यंजने: ")
+# unusedcl = []
+# for c in consonents:
+#     if c in untriedc:
+#         unusedcl.append(c)
+# st.markdown(unusedcl)
+
+# usedcl = []
+# st.write("वापरलेली व्यंजने: ")
+# for c in consonents:
+#     if c in usedc:
+#         usedcl.append(c)
+# st.markdown(usedcl)
 
 
