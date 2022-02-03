@@ -20,8 +20,8 @@ wordlist = ['मयत','मकडी','माकड','मगर','मंकड'
 
 consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 
               'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
-              'य', 'र', 'ऱ', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
-# Should map 'ऱ' to 'र' (todo)
+              'य', 'र', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
+# Should map 'ऱ' to 'र' (done) in blues2
 
 vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
           '।', 'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
@@ -102,6 +102,7 @@ def consonant_structure(word):
     '''
     Get consonant structure
     '''
+    mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५'}
     tclust = split_clusters(word)  
     c_struc = []
     for i in range(len(tclust)):
@@ -116,7 +117,11 @@ def consonant_structure(word):
                 tblues2.append(j)
                 found_consonent += 1
         tblues2.append(found_consonent)
-        c_struc.append(str(len(tblues2)-1))
+        l = len(tblues2)-1
+        if l in mdigits:
+            c_struc.append(mdigits[l])
+        else:
+            c_struc.append('∞')
     
     return c_struc
 
@@ -184,6 +189,8 @@ def get_blues2(sclust, tclust):
         found_consonent = 0
         for j in scomps:
             if j in consonents:
+                if j == 'ऱ':
+                    j = 'र'
                 sblues2.append(j)
                 found_consonent += 1
         if found_consonent == 0:
@@ -193,6 +200,8 @@ def get_blues2(sclust, tclust):
         found_consonent = 0
         for j in tcomps:
             if j in consonents:
+                if j == 'ऱ':
+                    j = 'र'
                 tblues2.append(j)
                 found_consonent += 1
                 st.session_state['usedc'].append(j)
@@ -202,6 +211,8 @@ def get_blues2(sclust, tclust):
     
         if set(sblues2).intersection(set(tblues2)):
             blues2.append(i)
+
+        #st.write(supsblues2)
     
     return list(blues2),supsblues2,suptblues2
 
@@ -269,8 +280,6 @@ def score(secret,test):
     tclust = split_clusters(test)
     if len(sclust)!=len(tclust):
         print("mismatched length")   # This should not happen
-    
-    
 
     green_array = get_greens(sclust,tclust)
     # blue_array1,svowels, tvowels = get_blues(sclust,tclust)
@@ -405,22 +414,23 @@ def getinput(words,secret,totcols,im,onemore):
             col1, col2, col3 = st.columns([10,10,10])
             with col1:
         #st.image(imname, width=imwidth)
-                myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='enter a Marathi word')
+                myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='मराठी शब्द टाईप करा')
         else:
             st.balloons()
-            col1, mid, col2, col3 = st.columns([8,1,2,4])
+            col1, mid, col2 = st.columns([8,1,4])
             with col1:
                 myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
             modalstr = ''
             # modal.open()
             # if modal.is_open():
             #     with modal.container():
-            with col2:
-                st.write("Share")
+            # with col2:
+            #     st.write("Share")
             for i in range(1,len(st.session_state['mylist'])):
                 modalstr = modalstr + ''.join([imunicode[k] for k in st.session_state['mylist'][i][1]]) + '\n'
-            with col3:
-                st.code(modalstr)
+            with col1:
+                st.write("Share")
+                st.code("शब्दखूळ %d/∞\n\n%s" % (len(st.session_state['mylist'])-1,modalstr))
 
         #st.code("copy to clipboard")
             myc2 = ''
@@ -496,7 +506,8 @@ def mainfunc(n):
     #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
     #st.markdown(str1)
 
-    #secret = 'प्रकाश'
+    # secret = 'प्रकाश'
+    # secret = 'लर्त्रण'
 
     copts = []
     opts = st.columns([4,4,4,6])
@@ -558,4 +569,15 @@ st.markdown(uandunusedcl)
 #         usedcl.append(c)
 # st.markdown(usedcl)
 
-
+# The following is for window focus
+components.html(
+    f"""
+        <script>
+            var input = window.parent.document.querySelectorAll("input[type=text]");
+            for (var i = 0; i < input.length; ++i) {{
+                input[i].focus();
+            }}
+    </script>
+    """,
+    height=150
+)
