@@ -16,12 +16,13 @@ st.title('शब्दखुूळ (तिनाक्षरी)')
 # 	index=1
 # )
 
+# Globals
 wordlist = ['मयत','मकडी','माकड','मगर','मंकड','कमळ','करीम','किस्त्रीम','मंगळ','मालती']
 
+# 'ऱ' is mapped to 'र' in blues2
 consonents = ['क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 
               'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 
               'य', 'र', 'ल', 'ळ', 'व', 'श', 'ष', 'स', 'ह']
-# Should map 'ऱ' to 'र' (done) in blues2
 
 vowels = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ',  'ओ', 'औ', 
           '।', 'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',  'े', 'ै',  'ो', 'ौ']
@@ -30,14 +31,13 @@ vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, '�
           '।':1, 'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 vowel_revsub = {1:'अ', 2:'आ', 3:'इ', 4:'ई', 5:'उ', 6:'ऊ', 11:'ऋ', 7:'ए', 8:'ऐ',  9:'ओ', 10:'औ'}
+mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५',6:'६',7:'७',8:'८',9:'९',10:'१०'}
+imunicode = {'R':'🟥','G':'🟩','B':'🟦','Y':'🟨'}
 
-GS = '🟩'
-RS = '🟥'
-YS = '🟨'
-BS = '🟦'
-im = {'R':'mwred.png','G':'mwgreen.png','B':'mwblue.png','Y':'mwyellow.png'}
-imunicode = {'R':RS,'G':GS,'B':BS,'Y':YS}
 
+
+# The following two functions are from the code Abhijit had found somewhere
+# for his crossword effort
 def split_clusters_helper(s):
     """Generate the grapheme clusters for the string s. (Not the full
     Unicode text segmentation algorithm, but probably good enough for
@@ -57,7 +57,6 @@ def split_clusters_helper(s):
         last = c
     if cluster:
         yield cluster
-
 
 def split_clusters(s):
     return list(split_clusters_helper(s))
@@ -102,7 +101,7 @@ def consonant_structure(word):
     '''
     Get consonant structure
     '''
-    mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५'}
+    
     tclust = split_clusters(word)  
     c_struc = []
     for i in range(len(tclust)):
@@ -118,10 +117,11 @@ def consonant_structure(word):
                 found_consonent += 1
         tblues2.append(found_consonent)
         l = len(tblues2)-1
-        if l in mdigits:
-            c_struc.append(mdigits[l])
-        else:
-            c_struc.append('∞')
+        c_struc.append(get_mdigits(l))
+        # if l in mdigits:
+        #     c_struc.append(mdigits[l])
+        # else:
+        #     c_struc.append('∞')
     
     return c_struc
 
@@ -347,6 +347,7 @@ def cnote(imname,imwidth,textdes):
     with col2:
         st.markdown(textdes)
 
+# The following few functions are for the checkboxes
 def notes():
     st.subheader("Notes:")
     st.markdown("Enter a Marathi word of suggested length and hit tab or enter.")
@@ -389,22 +390,28 @@ def reveal():
     st.subheader("The word is ... ")
     st.write(st.session_state['secret'])
 
-def getinput(words,secret,totcols,im,onemore):
+
+def getinput(words,secret,totcols,imunicode,onemore,depth):
+    '''
+    This is the main function getting input and managing flow
+    Has recursion
+    '''
+    
     
     placeholder = st.empty()
     with placeholder.container():
 
         if len(st.session_state['mylist'])>1: 
             for i in range(1,len(st.session_state['mylist'])):
-                cols = st.columns(totcols)
-                cols[0].write(st.session_state['mylist'][i][0])
+                #cols = st.columns(totcols)
+                # cols[0].write(st.session_state['mylist'][i][0])
                 forcol1 = ''
-                forcol1 = forcol1 + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
-                forcol1 = forcol1 + '\n' + ''.join([st.session_state['mylist'][i][1][j] for j in range(len(st.session_state['mylist'][i][1]))])
-                # with cols[0]:
-                #     st.markdown("%5s %s" % (st.session_state['mylist'][i][0],forcol1))
-                with cols[1]:
-                    st.markdown(forcol1)
+                forcol1 = forcol1 + ''.join([st.session_state['mylist'][i][1][j] for j in range(len(st.session_state['mylist'][i][1]))])
+                forcol1 = forcol1 + '\n' + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
+                #with cols[0]:
+                st.write("%8s %s %s" % (forcol1,"  ",st.session_state['mylist'][i][0]))
+                # with cols[1]:
+                #     st.markdown(forcol1)
                 # for j in range(len(st.session_state['mylist'][i][1])):
                 #     #cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
                 #     tcolor = st.session_state['mylist'][i][1][j]
@@ -419,7 +426,7 @@ def getinput(words,secret,totcols,im,onemore):
             st.balloons()
             col1, mid, col2 = st.columns([8,1,4])
             with col1:
-                myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='You win with: '+st.session_state['mylist'][-1][0])
+                myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात: '+st.session_state['mylist'][-1][0])
             modalstr = ''
             # modal.open()
             # if modal.is_open():
@@ -429,8 +436,8 @@ def getinput(words,secret,totcols,im,onemore):
             for i in range(1,len(st.session_state['mylist'])):
                 modalstr = modalstr + ''.join([imunicode[k] for k in st.session_state['mylist'][i][1]]) + '\n'
             with col1:
-                st.write("Share")
-                st.code("शब्दखूळ %d/∞\n\n%s" % (len(st.session_state['mylist'])-1,modalstr))
+                st.write("दवंडी पिटा")
+                st.code("शब्दखूुळ %s/∞\n\n%s" % (get_mdigits(len(st.session_state['mylist'])-1),modalstr))
 
         #st.code("copy to clipboard")
             myc2 = ''
@@ -439,11 +446,11 @@ def getinput(words,secret,totcols,im,onemore):
         #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
         if myc2 in words:
             #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
-            logfile = open("logdir/userlog.txt", "a")
+            #logfile = open("logdir/userlog.txt", "a")
             myc2score = score(secret,myc2.strip())
             st.session_state['mylist'].append([myc2,myc2score])
-            logfile.write("%s %s 1 %s\n" % (st.session_state['sessionid'],myc2,myc2score))
-            logfile.close()
+            # logfile.write("%s %s 1 %s %d %d\n" % (st.session_state['sessionid'],myc2,myc2score,len(st.session_state['mylist']),depth))
+            # logfile.close()
             # if myc2score == 'G' * len(split_clusters(secret)):
             #     st.write("you win")
         else: # For now allowing all words
@@ -455,20 +462,34 @@ def getinput(words,secret,totcols,im,onemore):
                         goodstr = 0
             if len(ttclust) == len(split_clusters(secret)) and goodstr == 1:
                 #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
-                logfile = open("logdir/userlog.txt", "a")
+                #logfile = open("logdir/userlog.txt", "a")
                 myc2score = score(secret,myc2.strip())
                 st.session_state['mylist'].append([myc2,myc2score])
-                logfile.write("%s %s 0 %s\n" % (st.session_state['sessionid'],myc2,myc2score))
-                logfile.close()
+                # logfile.write("%s %s 0 %s %d %d\n" % (st.session_state['sessionid'],myc2,myc2score,len(st.session_state['mylist']),depth))
+                # logfile.close()
         st.session_state['gcount'] += 1
         placeholder.empty()
+        depth += 1
         if myc2 in words and myc2score == 'G' * len(split_clusters(secret)):
-                st.write("you win")
-                getinput(words,secret,totcols,im,0)
+                st.write("तुम्ही जिंकलात")
+                logfile = open("logdir/userlog.txt", "a")
+                for m in range(1,len(st.session_state['mylist'])):
+                    logfile.write("%s %s 0 %s %d %d\n" % (st.session_state['sessionid'],st.session_state['mylist'][m][0],st.session_state['mylist'][m][1],len(st.session_state['mylist']),99))
+                logfile.close()
+                getinput(words,secret,totcols,imunicode,0,depth)
         else:
-            getinput(words,secret,totcols,im,1)
+            getinput(words,secret,totcols,imunicode,1,depth)
+
+def get_mdigits(n):
+    if n in mdigits:
+        return mdigits[n]
+    else:
+        return '>१०'
 
 def mainfunc(n):
+    '''
+    Wrapper function
+    '''
 
     #totcols = n+1
     # totcols = [3]
@@ -533,51 +554,37 @@ def mainfunc(n):
     # if copts[3]:
     #     todos()
 
+    depth = 0
+    getinput(words,secret,totcols,imunicode,1,depth)
 
-    getinput(words,secret,totcols,im,1)
+    usedc = set(st.session_state['usedc'])
+    usedv = set(st.session_state['usedv'])
+    usedc.remove('X')
+    usedv.remove('X')
+    untriedc = set(consonents).difference(usedc)
+    untriedv = set(vowels).difference(usedv)
 
+    st.write("`वापरलेली` आणि न वापरलेली व्यंजने: ")
+    uandunusedcl = ''
+    for c in consonents:
+        if c in untriedc:
+            uandunusedcl += '%s ' % c
+        else:
+            uandunusedcl += '`%s` ' % c
+    st.markdown(uandunusedcl)
+
+    # The following is for window focus
+    components.html(
+        f"""
+            <script>
+                var input = window.parent.document.querySelectorAll("input[type=text]");
+                for (var i = 0; i < input.length; ++i) {{
+                    input[i].focus();
+                }}
+        </script>
+        """,
+        height=150
+    )
 
 #mainfunc(int(toDisplay))
 mainfunc(3)
-usedc = set(st.session_state['usedc'])
-usedv = set(st.session_state['usedv'])
-usedc.remove('X')
-usedv.remove('X')
-untriedc = set(consonents).difference(usedc)
-untriedv = set(vowels).difference(usedv)
-
-st.write("`वापरलेली` आणि न वापरलेली व्यंजने: ")
-uandunusedcl = ''
-for c in consonents:
-    if c in untriedc:
-        uandunusedcl += '%s ' % c
-    else:
-        uandunusedcl += '`%s` ' % c
-st.markdown(uandunusedcl)
-
-# st.write("न वापरलेली व्यंजने: ")
-# unusedcl = []
-# for c in consonents:
-#     if c in untriedc:
-#         unusedcl.append(c)
-# st.markdown(unusedcl)
-
-# usedcl = []
-# st.write("वापरलेली व्यंजने: ")
-# for c in consonents:
-#     if c in usedc:
-#         usedcl.append(c)
-# st.markdown(usedcl)
-
-# The following is for window focus
-components.html(
-    f"""
-        <script>
-            var input = window.parent.document.querySelectorAll("input[type=text]");
-            for (var i = 0; i < input.length; ++i) {{
-                input[i].focus();
-            }}
-    </script>
-    """,
-    height=150
-)
