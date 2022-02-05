@@ -340,12 +340,12 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
     
     return ss
 
-def cnote(imname,imwidth,textdes):
-    col1, col2 = st.columns([1,20])
-    with col1:
-        st.image(imname, width=imwidth)
-    with col2:
-        st.markdown(textdes)
+# def cnote(imname,imwidth,textdes):
+#     col1, col2 = st.columns([1,20])
+#     with col1:
+#         st.markdown(imname)
+#     with col2:
+#         st.markdown(textdes)
 
 # The following few functions are for the checkboxes
 def notes():
@@ -360,15 +360,15 @@ def notes():
         and where it suggests `अ` it could be `अं`.")
     st.markdown("> Visargas `:`, ardha-chandra `ॅ` and `ॉ`, chandra-bindu `ॅं` do not appear in\
          the secret words, nor are they halant (ending in `्`).")
-    cnote(im['G'],20,"Green means that that letter is correct in all respects (position, consonant, and vowel.")
-    cnote(im['B'],20, "Blue indicates that at least one consonant matches at that position\
-         e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc.")
-    cnote(im['Y'],20,"Yellow reveals that at least one consonant at that position matches one at another position.")
-    cnote(im['R'],20, "Red suggests that that consonant may not match anything in the word. Blue and Yellow take\
+    st.markdown("%s Green means that that letter is correct in all respects (position, consonant, and vowel." % imunicode['G'])
+    st.markdown("%s Blue indicates that at least one consonant matches at that position\
+         e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc." %imunicode['B'])
+    st.markdown("%s Yellow reveals that at least one consonant at that position matches one at another position." % imunicode['Y'])
+    st.markdown("%s Red suggests that that consonant may not match anything in the word. Blue and Yellow take\
         precedence over Red, so the following situation is possible: the secret word is\
         `कर्तव्य` and you have guessed `कातरी`. The `का` gives you a Blue because `क` matches, the `त` also gives\
         you a Blue because it matches the `त` in `र् + त्` and finally the `री` gives you a Red despite the \
-        fact that the `र्` matches that in `र्त` because something has already matched the second position.")
+        fact that the `र्` matches that in `र्त` because something has already matched the second position." % imunicode['R'])
     st.write("> When you get all Greens, you win.")
     st.write("More examples will be added under 'Details'.")
 
@@ -388,7 +388,7 @@ def details():
 
 def reveal():
     st.subheader("The word is ... ")
-    st.write(st.session_state['secret'])
+    st.markdown('`%s`' % st.session_state['secret'])
 
 
 def getinput(words,secret,totcols,imunicode,onemore,depth):
@@ -437,7 +437,7 @@ def getinput(words,secret,totcols,imunicode,onemore,depth):
                 modalstr = modalstr + ''.join([imunicode[k] for k in st.session_state['mylist'][i][1]]) + '\n'
             with col1:
                 st.write("दवंडी पिटा")
-                st.code("शब्दखूुळ %s/∞\n\n%s" % (get_mdigits(len(st.session_state['mylist'])-1),modalstr))
+                st.code("शब्दखूुळ\n%s %s/∞\n\n%s" % (secret,get_mdigits(len(st.session_state['mylist'])-1),modalstr))
 
         #st.code("copy to clipboard")
             myc2 = ''
@@ -523,7 +523,7 @@ def mainfunc(n):
         rsshape.append(vowel_revsub[int(i)])
     
     cshape = consonant_structure(secret)
-    st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजनसंख्या `%s`" % (''.join(rsshape),''.join(cshape)))
+    st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(rsshape),''.join(cshape)))
     #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
     #st.markdown(str1)
 
@@ -531,7 +531,7 @@ def mainfunc(n):
     # secret = 'लर्त्रण'
 
     copts = []
-    opts = st.columns([4,4,4,6])
+    opts = st.columns([4,4,4,12])
     copts.append(opts[0].checkbox('टिपा'))
     copts.append(opts[1].checkbox('तपशील'))
     copts.append(opts[2].checkbox('उत्तर'))
