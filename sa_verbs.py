@@ -6,6 +6,10 @@ import unicodedata
 import string
 import streamlit_modal as modal
 import streamlit.components.v1 as components
+from google.cloud import firestore
+from google.oauth2 import service_account
+import json
+import datetime
 
 st.title('शब्दखुूळ (तिनाक्षरी)')
 #st.sidebar.title("Word Length")
@@ -418,13 +422,13 @@ def getinput(words,secret,totcols,imunicode,onemore,depth):
                 #     with cols[j+1]:
                 #         st.markdown("%s%s" % (imunicode[tcolor],tcolor))
         if onemore:
-            col1, col2, col3 = st.columns([10,10,10])
+            col1, col2 = st.columns([12,16])
             with col1:
         #st.image(imname, width=imwidth)
                 myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='मराठी शब्द टाईप करा')
         else:
             st.balloons()
-            col1, mid, col2 = st.columns([8,1,4])
+            col1, col2 = st.columns([12, 16])
             with col1:
                 myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात: '+st.session_state['mylist'][-1][0])
             modalstr = ''
@@ -448,7 +452,7 @@ def getinput(words,secret,totcols,imunicode,onemore,depth):
             #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
             #logfile = open("logdir/userlog.txt", "a")
             myc2score = score(secret,myc2.strip())
-            st.session_state['mylist'].append([myc2,myc2score])
+            st.session_state['mylist'].append([myc2,myc2score,1])
             # logfile.write("%s %s 1 %s %d %d\n" % (st.session_state['sessionid'],myc2,myc2score,len(st.session_state['mylist']),depth))
             # logfile.close()
             # if myc2score == 'G' * len(split_clusters(secret)):
@@ -457,14 +461,17 @@ def getinput(words,secret,totcols,imunicode,onemore,depth):
             ttclust = split_clusters(myc2.strip())
             goodstr=1
             for j in range(len(ttclust)):
-                for k in range(len(ttclust[j])):
+                for k in range(len(ttclust[j])): # eliminates non devnag
                     if ord(ttclust[j][k]) < 2304 or ord(ttclust[j][k]) > 2431:
+                        goodstr = 0
+                for k in range(len(consonant_structure(myc2.strip()))): # eliminates clusters with > 4 consonants
+                    if consonant_structure(myc2.strip())[k] not in ['०','१','२','३','४']:
                         goodstr = 0
             if len(ttclust) == len(split_clusters(secret)) and goodstr == 1:
                 #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
                 #logfile = open("logdir/userlog.txt", "a")
                 myc2score = score(secret,myc2.strip())
-                st.session_state['mylist'].append([myc2,myc2score])
+                st.session_state['mylist'].append([myc2,myc2score,0])
                 # logfile.write("%s %s 0 %s %d %d\n" % (st.session_state['sessionid'],myc2,myc2score,len(st.session_state['mylist']),depth))
                 # logfile.close()
         st.session_state['gcount'] += 1
@@ -476,9 +483,31 @@ def getinput(words,secret,totcols,imunicode,onemore,depth):
                 for m in range(1,len(st.session_state['mylist'])):
                     logfile.write("%s %s 0 %s %d %d\n" % (st.session_state['sessionid'],st.session_state['mylist'][m][0],st.session_state['mylist'][m][1],len(st.session_state['mylist']),99))
                 logfile.close()
+                write2firebase(st.session_state['sessionid'],st.session_state['mylist'])
                 getinput(words,secret,totcols,imunicode,0,depth)
         else:
             getinput(words,secret,totcols,imunicode,1,depth)
+
+def write2firebase(sid,inlist):
+    #db = firestore.Client.from_service_account_json("firestore-key.json")
+    #import json
+    key_dict = json.loads(st.secrets["textkey"])
+    creds = service_account.Credentials.from_service_account_info(key_dict)
+    db = firestore.Client(credentials=creds, project="wordlemart")
+    doc_ref = db.collection(u'plays').document(sid)
+    setstr = {}
+    setstr['attempts'] = []  
+    for m in range(1,len(inlist)):
+        attemptdict = {}
+        attemptdict[u'input'] = inlist[m][0]
+        attemptdict[u'score'] = inlist[m][1]
+        attemptdict[u'indict'] = inlist[m][2]
+        setstr['attempts'].append(attemptdict)
+    #setstr += "]\n}"
+    #st.write(setstr)
+    timenow = datetime.datetime.now(datetime.timezone.utc)
+    setstr[u'wintime'] = timenow
+    doc_ref.set(setstr)
 
 def get_mdigits(n):
     if n in mdigits:
@@ -531,7 +560,8 @@ def mainfunc(n):
     # secret = 'लर्त्रण'
 
     copts = []
-    opts = st.columns([4,4,4,12])
+    opts = st.columns([4,4,4,16])
+    #opts = st.columns(3)
     copts.append(opts[0].checkbox('टिपा'))
     copts.append(opts[1].checkbox('तपशील'))
     copts.append(opts[2].checkbox('उत्तर'))
@@ -571,7 +601,8 @@ def mainfunc(n):
             uandunusedcl += '%s ' % c
         else:
             uandunusedcl += '`%s` ' % c
-    st.markdown(uandunusedcl)
+    st.markdown(uandunusedcl[:30])
+    st.markdown(uandunusedcl[30:])
 
     # The following is for window focus
     components.html(
