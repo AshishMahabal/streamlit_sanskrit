@@ -449,8 +449,11 @@ def mainfunc(n):
             uandunusedcl += '%s ' % c
         else:
             uandunusedcl += '`%s` ' % c
-    st.markdown(uandunusedcl[:30])
-    st.markdown(uandunusedcl[30:])
+# The following caused a bug when a letter was split across 30.
+# Letting it naturally wrap.
+    # st.markdown(uandunusedcl[:30])
+    # st.markdown(uandunusedcl[30:])
+    st.markdown(uandunusedcl)
 
     col1, col2, col3 = st.columns(3)
     with col1:
