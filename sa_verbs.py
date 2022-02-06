@@ -10,6 +10,7 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 import json
 import datetime
+import uuid
 
 st.title('शब्दखुूळ (तिनाक्षरी)')
 #st.sidebar.title("Word Length")
@@ -21,6 +22,7 @@ st.title('शब्दखुूळ (तिनाक्षरी)')
 # )
 
 # Globals
+wlen = 3
 wordlist = ['मयत','मकडी','माकड','मगर','मंकड','कमळ','करीम','किस्त्रीम','मंगळ','मालती']
 
 # 'ऱ' is mapped to 'र' in blues2
@@ -36,9 +38,7 @@ vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, '�
 
 vowel_revsub = {1:'अ', 2:'आ', 3:'इ', 4:'ई', 5:'उ', 6:'ऊ', 11:'ऋ', 7:'ए', 8:'ऐ',  9:'ओ', 10:'औ'}
 mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५',6:'६',7:'७',8:'८',9:'९',10:'१०'}
-imunicode = {'R':'🟥','G':'🟩','B':'🟦','Y':'🟨'}
-
-
+imunicode = {'R':'🟥','R':'❌','G':'🟩','G':'✅','B':'🟦','B':'🔵','Y':'🟨'}
 
 # The following two functions are from the code Abhijit had found somewhere
 # for his crossword effort
@@ -129,47 +129,6 @@ def consonant_structure(word):
     
     return c_struc
 
-def get_blues(sclust, tclust):
-    '''
-    greens will overwrite any overlapping blues the way we call them.
-    This is for vowels, so not used for the simpler version
-    '''
-    
-    sblues = []
-    tblues = []
-    blues = []
-    for i in range(len(sclust)):
-        scomps = [j for j in sclust[i] if j != '्'] # remove halant signs
-        tcomps = [j for j in tclust[i] if j != '्']
-        # check for match अ needs to be handled differently as it does not appear as a separate vowel
-        # List the possible unicode vovel endings as 0-12 (akar being 0 and rukar being 12)
-        # Plus actual vowels
-        
-        #print(scomps,tcomps)
-        found_vowel = 0
-        for j in scomps:
-            if j in vowels:
-                sblues.append(vowel_subs[j])
-                found_vowel += 1
-        if found_vowel == 0:
-            sblues.append(1)
-            
-        found_vowel = 0
-        for j in tcomps:
-            if j in vowels:
-                tblues.append(vowel_subs[j])
-                found_vowel += 1
-                st.session_state['usedv'].append(j)
-        if found_vowel == 0:
-            tblues.append(1)
-            st.session_state['usedv'].append('।')
-    
-    for i in range(len(sclust)):
-        if sblues[i] == tblues[i]:
-            blues.append(i)
-    
-    return list(blues),sblues,tblues
-
 def get_blues2(sclust, tclust):
     '''
     greens will overwrite any overlapping blues the way we call them.
@@ -219,61 +178,6 @@ def get_blues2(sclust, tclust):
         #st.write(supsblues2)
     
     return list(blues2),supsblues2,suptblues2
-
-def test_for_yellows(ss,svowels,tvowels,sconsonents,tconsonents):
-    '''
-    This is for the c and s version
-    test_for_yellows_conly(ss,sconsonents,tconsonents) to be used for consonants
-    '''
-    #print(ss,svowels,tvowels,sconsonents,tconsonents)
-    ysvowels = []
-    ysconsonents = []
-    ytvowels = []
-    ytconsonents = []
-    checklist = []
-    for i in range(len(svowels)):
-        if ss[i] == 'X':
-            ysvowels.append(svowels[i])
-            ysconsonents.append(sconsonents[i])
-            ytvowels.append(tvowels[i])
-            ytconsonents.append(tconsonents[i])
-            checklist.append(i)
-        else:
-            ysvowels.append(0)
-            ysconsonents.append(['']) # changed this from 0 for set union to work
-            ytvowels.append(0)
-            ytconsonents.append(['']) # changed this from 0 for set union to work
-    
-    ys = []
-    accountedv = [] # which of secret words letters already have a yellow
-    accountedc = [] # this is for the consonants
-    for i in checklist:
-        #print(i)
-        for j in checklist:
-            if j not in accountedv and ytvowels[i] == ysvowels[j]:
-                ys.append(i)
-                accountedv.append(j)
-                #print("appending %d to ys due to vowel match" % i)
-                break # Now that you have already matched, don't match others
-
-    for i in checklist:
-        #print(i)
-        for j in checklist:
-            if ytconsonents[i] != ['']: # skip pure vowels
-                if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
-                    #print("found in union")
-                    ys.append(i)
-                    accountedc.append(i)
-                    #print("appending %d to ys due to consonent match" % i)
-    uniq_ys = set(ys)
-    
-    for i in checklist: # use word length here
-        if i in uniq_ys:
-            ss = ss[:i] + 'Y' + ss[i + 1:]
-        else:
-            ss = ss[:i] + 'R' + ss[i + 1:]
-    
-    return ss
         
 def score(secret,test):
     '''
@@ -344,13 +248,6 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
     
     return ss
 
-# def cnote(imname,imwidth,textdes):
-#     col1, col2 = st.columns([1,20])
-#     with col1:
-#         st.markdown(imname)
-#     with col2:
-#         st.markdown(textdes)
-
 # The following few functions are for the checkboxes
 def notes():
     st.subheader("Notes:")
@@ -375,6 +272,8 @@ def notes():
         fact that the `र्` matches that in `र्त` because something has already matched the second position." % imunicode['R'])
     st.write("> When you get all Greens, you win.")
     st.write("More examples will be added under 'Details'.")
+    #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
+    #st.markdown(str1)
 
 def todos():
     st.subheader("ToDos:")
@@ -387,110 +286,84 @@ def todos():
     st.markdown("- ~~Counter changes when radio buttons clicked - avoid that~~")
 
 def details():
-    st.subheader("More details:")
-    st.write("If the secret word is ...")
+    #st.subheader("More details:")
+    st.write("place for examples ...")
 
 def reveal():
-    st.subheader("The word is ... ")
     st.markdown('`%s`' % st.session_state['secret'])
 
+def newplay():
+    st.markdown("placeholder")
+    # st.markdown("Another play")
+    # del st.session_state['secret']
+    # placeholder0.empty()
+    #mainfunc(wlen)
 
-def getinput(words,secret,totcols,imunicode,onemore,depth):
+def getinput(secret,imunicode,onemore,depth):
     '''
     This is the main function getting input and managing flow
     Has recursion
     '''
     
-    
     placeholder = st.empty()
     with placeholder.container():
-
         if len(st.session_state['mylist'])>1: 
             for i in range(1,len(st.session_state['mylist'])):
-                #cols = st.columns(totcols)
-                # cols[0].write(st.session_state['mylist'][i][0])
                 forcol1 = ''
-                forcol1 = forcol1 + ''.join([st.session_state['mylist'][i][1][j] for j in range(len(st.session_state['mylist'][i][1]))])
+                #forcol1 = forcol1 + ''.join([st.session_state['mylist'][i][1][j] for j in range(len(st.session_state['mylist'][i][1]))])
                 forcol1 = forcol1 + '\n' + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
-                #with cols[0]:
                 st.write("%8s %s %s" % (forcol1,"  ",st.session_state['mylist'][i][0]))
-                # with cols[1]:
-                #     st.markdown(forcol1)
-                # for j in range(len(st.session_state['mylist'][i][1])):
-                #     #cols[j+1].image(im[st.session_state['mylist'][i][1][j]],width=50)
-                #     tcolor = st.session_state['mylist'][i][1][j]
-                #     with cols[j+1]:
-                #         st.markdown("%s%s" % (imunicode[tcolor],tcolor))
         if onemore:
-            col1, col2 = st.columns([12,16])
+            col1, col2 = st.columns([16,12])
             with col1:
-        #st.image(imname, width=imwidth)
-                myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder='मराठी शब्द टाईप करा')
+                #oldprompt = 'मराठी शब्द टाईप करा'
+                prompt = "गुपितातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape']))
+                myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder=prompt)
         else:
-            st.balloons()
+            if st.session_state['balloons'] == 1:
+                st.balloons()
+                st.session_state['balloons'] = 0
             col1, col2 = st.columns([12, 16])
             with col1:
                 myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात: '+st.session_state['mylist'][-1][0])
             modalstr = ''
-            # modal.open()
-            # if modal.is_open():
-            #     with modal.container():
-            # with col2:
-            #     st.write("Share")
+
             for i in range(1,len(st.session_state['mylist'])):
                 modalstr = modalstr + ''.join([imunicode[k] for k in st.session_state['mylist'][i][1]]) + '\n'
             with col1:
                 st.write("दवंडी पिटा")
-                st.code("शब्दखूुळ\n%s %s/∞\n\n%s" % (secret,get_mdigits(len(st.session_state['mylist'])-1),modalstr))
+                st.code("शब्दखूुळ\n#%d %s/∞\n\n%s" % (st.session_state['nthword'],get_mdigits(len(st.session_state['mylist'])-1),modalstr))
 
         #st.code("copy to clipboard")
             myc2 = ''
 
-    if myc2:
-        #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
-        if myc2 in words:
-            #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
-            #logfile = open("logdir/userlog.txt", "a")
+    if myc2.strip():
+        ttclust = split_clusters(myc2.strip())
+        goodstr=1
+        for j in range(len(ttclust)):
+            for k in range(len(ttclust[j])): # eliminates non devnag
+                if ord(ttclust[j][k]) < 2304 or ord(ttclust[j][k]) > 2431:
+                    goodstr = 0
+            for k in range(len(consonant_structure(myc2.strip()))): # eliminates clusters with > 4 consonants
+                if consonant_structure(myc2.strip())[k] not in ['०','१','२','३','४']:
+                    goodstr = 0
+        if len(ttclust) != len(split_clusters(secret)):
+            goodstr = 0
+        if goodstr == 1:
             myc2score = score(secret,myc2.strip())
-            st.session_state['mylist'].append([myc2,myc2score,1])
-            # logfile.write("%s %s 1 %s %d %d\n" % (st.session_state['sessionid'],myc2,myc2score,len(st.session_state['mylist']),depth))
-            # logfile.close()
-            # if myc2score == 'G' * len(split_clusters(secret)):
-            #     st.write("you win")
-        else: # For now allowing all words
-            ttclust = split_clusters(myc2.strip())
-            goodstr=1
-            for j in range(len(ttclust)):
-                for k in range(len(ttclust[j])): # eliminates non devnag
-                    if ord(ttclust[j][k]) < 2304 or ord(ttclust[j][k]) > 2431:
-                        goodstr = 0
-                for k in range(len(consonant_structure(myc2.strip()))): # eliminates clusters with > 4 consonants
-                    if consonant_structure(myc2.strip())[k] not in ['०','१','२','३','४']:
-                        goodstr = 0
-            if len(ttclust) == len(split_clusters(secret)) and goodstr == 1:
-                #logfile = open("logdir/"+st.session_state['sessionid']+".txt", "a")
-                #logfile = open("logdir/userlog.txt", "a")
-                myc2score = score(secret,myc2.strip())
-                st.session_state['mylist'].append([myc2,myc2score,0])
-                # logfile.write("%s %s 0 %s %d %d\n" % (st.session_state['sessionid'],myc2,myc2score,len(st.session_state['mylist']),depth))
-                # logfile.close()
+            st.session_state['mylist'].append([myc2.strip(),myc2score,0])
         st.session_state['gcount'] += 1
         placeholder.empty()
         depth += 1
-        if myc2 in words and myc2score == 'G' * len(split_clusters(secret)):
-                st.write("तुम्ही जिंकलात")
-                logfile = open("logdir/userlog.txt", "a")
-                for m in range(1,len(st.session_state['mylist'])):
-                    logfile.write("%s %s 0 %s %d %d\n" % (st.session_state['sessionid'],st.session_state['mylist'][m][0],st.session_state['mylist'][m][1],len(st.session_state['mylist']),99))
-                logfile.close()
+        if goodstr !=0 and myc2score == 'G' * len(split_clusters(secret)):
+                #st.write("तुम्ही जिंकलात!")
                 write2firebase(st.session_state['sessionid'],st.session_state['mylist'])
-                getinput(words,secret,totcols,imunicode,0,depth)
+                getinput(secret,imunicode,0,depth)
         else:
-            getinput(words,secret,totcols,imunicode,1,depth)
+            getinput(secret,imunicode,1,depth)
 
 def write2firebase(sid,inlist):
     #db = firestore.Client.from_service_account_json("firestore-key.json")
-    #import json
     key_dict = json.loads(st.secrets["textkey"])
     creds = service_account.Credentials.from_service_account_info(key_dict)
     db = firestore.Client(credentials=creds, project="wordlemart")
@@ -503,8 +376,6 @@ def write2firebase(sid,inlist):
         attemptdict[u'score'] = inlist[m][1]
         attemptdict[u'indict'] = inlist[m][2]
         setstr['attempts'].append(attemptdict)
-    #setstr += "]\n}"
-    #st.write(setstr)
     timenow = datetime.datetime.now(datetime.timezone.utc)
     setstr[u'wintime'] = timenow
     doc_ref.set(setstr)
@@ -520,13 +391,6 @@ def mainfunc(n):
     Wrapper function
     '''
 
-    #totcols = n+1
-    # totcols = [3]
-    # for i in range(n):
-    #     totcols.append(1)
-    # totcols.append(6)
-    totcols = [4,7,20]
-    wordfile = "wordslen%d.dat" % n
     secret_wordfile = "subwordslen%d.dat" % n
     
     st.session_state['gcount'] = 1
@@ -535,57 +399,41 @@ def mainfunc(n):
     st.session_state['usedv'] = ['X'] # we ignore the zeroth later
 
     if 'secret' not in st.session_state:
-        idl1 = random.choice(string.ascii_uppercase)
-        idl2 = random.choice(string.ascii_uppercase)
-        idn1 = str("%0d" % random.randint(0,100000))
-        st.session_state['sessionid'] = idl1+idl2+idn1
+        # idl1 = random.choice(string.ascii_uppercase)
+        # idl2 = random.choice(string.ascii_uppercase)
+        # idn1 = str("%0d" % random.randint(0,100000))
+        # st.session_state['sessionid'] = idl1+idl2+idn1
+        st.session_state['balloons'] = 1
+        st.session_state['sessionid'] = uuid.uuid4().hex
         words = open(secret_wordfile,'r').read().split('\n')
-        secret = random.sample(words,1)[0]
-        words = open(wordfile,'r').read().split('\n') # all words now
+        nthword = random.randrange(len(words))
+        #secret = random.sample(words,1)[0]
+        secret = words[nthword]
+        st.session_state['nthword'] = nthword
+        #st.write(secret,nthword)
         st.session_state['secret'] = secret
-        st.session_state['words'] = words
+        st.session_state['rsshape'] = [vowel_revsub[int(i)] for i in vowel_structure(secret)]
+        st.session_state['cshape'] = consonant_structure(secret)
     secret = st.session_state['secret']
-    words = st.session_state['words']
-    sshape = vowel_structure(secret)
-    rsshape = []
-    for i in sshape:
-        rsshape.append(vowel_revsub[int(i)])
-    
-    cshape = consonant_structure(secret)
-    st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(rsshape),''.join(cshape)))
-    #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
-    #st.markdown(str1)
+
+    st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape'])))
 
     # secret = 'प्रकाश'
     # secret = 'लर्त्रण'
 
     copts = []
-    opts = st.columns([4,4,4,16])
+    opts = st.columns(3)
     #opts = st.columns(3)
     copts.append(opts[0].checkbox('टिपा'))
     copts.append(opts[1].checkbox('तपशील'))
-    copts.append(opts[2].checkbox('उत्तर'))
-    #copts.append(opts[3].checkbox('बाकी'))
-
-    # if st.checkbox('टिपा'):
-    #     notes()
-    # if st.checkbox('तपशील'):
-    #     details()
-    # if st.checkbox('उत्तर'):
-    #     reveal()
-    
 
     if copts[0]:
         notes()
     if copts[1]:
         details()
-    if copts[2]:
-        reveal()
-    # if copts[3]:
-    #     todos()
 
     depth = 0
-    getinput(words,secret,totcols,imunicode,1,depth)
+    getinput(secret,imunicode,1,depth)
 
     usedc = set(st.session_state['usedc'])
     usedv = set(st.session_state['usedv'])
@@ -604,6 +452,14 @@ def mainfunc(n):
     st.markdown(uandunusedcl[:30])
     st.markdown(uandunusedcl[30:])
 
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button('उत्तर'):
+            reveal()
+    with col2:
+        if st.button('नवी खेळी'):
+            newplay()
+
     # The following is for window focus
     components.html(
         f"""
@@ -618,4 +474,14 @@ def mainfunc(n):
     )
 
 #mainfunc(int(toDisplay))
-mainfunc(3)
+#placeholder0 = st.empty()
+
+#with placeholder0.container():
+mainfunc(wlen)
+
+############################
+            # modal.open()
+            # if modal.is_open():
+            #     with modal.container():
+            # with col2:
+            #     st.write("Share")
