@@ -11,6 +11,7 @@ from google.oauth2 import service_account
 import json
 import datetime
 import uuid
+from collections import Counter
 
 st.title('शब्दखुूळ (तिनाक्षरी)')
 #st.sidebar.title("Word Length")
@@ -37,7 +38,7 @@ vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, '�
           '।':1, 'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 vowel_revsub = {1:'अ', 2:'आ', 3:'इ', 4:'ई', 5:'उ', 6:'ऊ', 11:'ऋ', 7:'ए', 8:'ऐ',  9:'ओ', 10:'औ'}
-mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५',6:'६',7:'७',8:'८',9:'९',10:'१०'}
+mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५',6:'६',7:'७',8:'८',9:'९',10:'१०', 11: '११', 12:'१२'}
 imunicode = {'R':'🟥','R':'❌','G':'🟩','G':'✅','B':'🟦','B':'🔵','Y':'🟨'}
 
 # The following two functions are from the code Abhijit had found somewhere
@@ -355,10 +356,16 @@ def getinput(secret,imunicode,onemore,depth):
     with placeholder.container():
         if len(st.session_state['mylist'])>1: 
             for i in range(1,len(st.session_state['mylist'])):
-                forcol1 = ''
-                #forcol1 = forcol1 + ''.join([st.session_state['mylist'][i][1][j] for j in range(len(st.session_state['mylist'][i][1]))])
-                forcol1 = forcol1 + '\n' + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
-                st.write("%8s %s %s" % (forcol1,"  ",st.session_state['mylist'][i][0]))
+                col1, col2, col3 = st.columns([10,10,10])
+                with col1: 
+                    forcol1 = ''
+                    forcol1 = forcol1 + '\n' + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
+                    st.write("%8s %s %s" % (forcol1,"  ",st.session_state['mylist'][i][0]))
+                if i == len(st.session_state['mylist'])-1:
+                    with col2:
+                        if st.button('खुलासा %s' % mdigits[i]):
+                            with modal.container():
+                                explain(st.session_state['mylist'][i][1])
         if onemore:
             col1, col2 = st.columns([16,12])
             with col1:
@@ -431,6 +438,28 @@ def get_mdigits(n):
         return mdigits[n]
     else:
         return '>१०'
+
+def explain(theScore):
+    scoreCount = Counter(theScore)
+    isare = {0:'are', 1:'is', 2:'are', 3:'are'}
+    blacktext("*Score details*")
+    if scoreCount['G']>0:
+        blacktext("There %s %d %s indicating that %d letter(s) match exactly" % (isare[scoreCount['G']],scoreCount['G'],imunicode['G'],scoreCount['G']))
+    if scoreCount['B']>0:
+        blacktext("There %s %d %s indicating that %d letter(s) match partially" % (isare[scoreCount['B']],scoreCount['B'],imunicode['B'],scoreCount['B']))
+    if scoreCount['Y']>0:
+        blacktext("There %s %d %s indicating that %d letter(s) match elsewhere (partially or fully - barring those already accounted by %s and %s)" % (isare[scoreCount['Y']],scoreCount['Y'],imunicode['Y'],scoreCount['Y'],imunicode['G'],imunicode['B']))
+    if scoreCount['R']>0:
+        blacktext("There %s %d %s indicating that %d letter(s) do not match even partially (this could exclude certain partial matches accounted for by %s and %s)" % (isare[scoreCount['R']],scoreCount['R'],imunicode['R'],scoreCount['R'],imunicode['B'],imunicode['Y']))
+
+def copyright():
+    blacktext("*Copyright 2022*")
+    blacktext("All rights reserved.")
+    blacktext("We do not collect any personal or location data.")
+    blacktext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[http://twitter.com/aschig](@aschig)")
+    blacktext("Credits: Inspiration from Wordle. Wordnet's wordlist.")
+    blacktext("Credits: Alpha-testers:")
+    blacktext("Credits: Beta-testers:")
 
 def mainfunc(n):
     '''
@@ -526,6 +555,11 @@ def mainfunc(n):
     with col2:
         if st.button('नवी खेळी'):
             newplay()
+
+    with col3:
+        if st.button('Copyright etc.'):
+            with modal.container():
+                copyright()
 
     # The following is for window focus
     components.html(
