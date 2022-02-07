@@ -257,10 +257,10 @@ def notes():
         the first is a pure vowel, the second is a single consonant (with a vowel), and the\
         third is a two-consonant combo (with a vowel) e.g. `अभद्र` or `आरक्त` or `अलिप्त`.\
         Please note that `क्ष (= क् + ष)` and `ज्ञ (= ज् + ञ)` are both conjuncts of size 2.")
-    st.markdown("> Everything is modulo an anusvar meaning where the codes above suggest a `म`, it could be `मं`\
-        and where it suggests `अ` it could be `अं`.")
-    st.markdown("> Visargas `:`, ardha-chandra `ॅ` and `ॉ`, chandra-bindu `ॅं` do not appear in\
-         the secret words, nor are they halant (ending in `्`).")
+    st.markdown("> Anusvar is not counted. If the codes above suggest a `म`, it could be `मं`\
+        and if it suggests `अ` it could be `अं`.")
+    st.markdown("> Visargas `:`, ardha-chandra `ॅ`, chandra-bindu `ॅं`, halant (`्`) are not in\
+         the secret words.")
     st.markdown("%s Green means that that letter is correct in all respects (position, consonant, and vowel." % imunicode['G'])
     st.markdown("%s Blue indicates that at least one consonant matches at that position\
          e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc." %imunicode['B'])
@@ -275,6 +275,32 @@ def notes():
     #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
     #st.markdown(str1)
 
+def notes2():
+    #blacktext("*Notes:*")
+    blacktext("Enter a Marathi word of suggested length and hit tab or enter.")
+    blacktext("> The vowel shape indicates the vowels in the word e.g. `अअआ` could mean `अकरा` or `बछडा` etc.")
+    blacktext("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
+        the first is a pure vowel, the second is a single consonant (with a vowel), and the\
+        third is a two-consonant combo (with a vowel) e.g. `अभद्र` or `आरक्त` or `अलिप्त`.\
+        Please note that `क्ष (= क् + ष)` and `ज्ञ (= ज् + ञ)` are both conjuncts of size 2.")
+    blacktext("> Anusvar is not counted. If the code suggests a `म`, it could be `मं`\
+        and if it suggests `अ` it could be `अं`.")
+    blacktext("> Visargas `:`, ardha-chandra `ॅ`, chandra-bindu `ॅं`, halant (`्`) are not in\
+         the secret words.")
+    blacktext("%s Green: letter is correct in all respects (position, consonant, and vowel." % imunicode['G'])
+    blacktext("%s Blue: at least one consonant matches at that position\
+         e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc." %imunicode['B'])
+    blacktext("%s Yellow: at least one consonant at that position matches one at another position." % imunicode['Y'])
+    blacktext("%s Red: the consonant does not match any letter not already matched. Blue and Yellow take\
+        precedence over Red, so the following situation is possible: the secret word is\
+        `कर्तव्य` and you have guessed `कातरी`. The `का` gives you a Blue because `क` matches, the `त` also gives\
+        you a Blue because it matches the `त` in `र् + त्` and finally the `री` gives you a Red despite the \
+        fact that the `र्` matches that in `र्त` because something has already matched the second position." % imunicode['R'])
+    blacktext("> When you get all Greens, you win.")
+    #blacktext("More examples will be added under 'Details'.")
+    #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
+    #blacktext(str1)
+
 def todos():
     st.subheader("ToDos:")
     st.markdown("- Add items to this list")
@@ -285,12 +311,32 @@ def todos():
     st.markdown("- Provide examples with markings")
     st.markdown("- ~~Counter changes when radio buttons clicked - avoid that~~")
 
+def blacktext(text):
+    mtext = "<font color=‘black’>%s</font>" % text
+    st.markdown(mtext,unsafe_allow_html=True )
+
 def details():
-    #st.subheader("More details:")
-    st.write("place for examples ...")
+    blacktext("*Details:*")
+    blacktext("The list of secret words is about 4000 long. A random one is\
+        presented along with its shape: what vowels are in each letter, and\
+        how many consonants are in each.")
+    blacktext("Thus, if the word is `बछडा`, the स्वराकार is `अअआ` and the\
+        `व्यंजनसंख्या` is `१११`. `अप्सरा` has the same स्वराकार (`अअआ`) but the\
+        `व्यंजनसंख्या` is `०२१`.")
+    blacktext("When trying words, you do not have to stick to the given shape.\
+        In fact, it would often be advantageous to try additional consonants, and perhaps\
+        also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
+        (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
+        of about 5 to 8 (e.g. `उखाणा` expands to `उ + ख् + आ + ण् + आ` for a total of 5 while\
+        `पर्याप्त` is 8 with `प् + अ + र् + य् + आ + प् + त् + अ`). By giving the स्वराकार the requirement\
+        of guessing letters is reduced by 3.")
+    blacktext("Another trick is to use more common consonants early, sometimes combined into\
+        common conjuncts like `प्र` and `त्र`.")
+    blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
 
 def reveal():
-    st.markdown('`%s`' % st.session_state['secret'])
+    blacktext('`%s`' % st.session_state['secret'])
+    #st.markdown('`%s`' % st.session_state['secret'])
 
 def newplay():
     st.markdown("placeholder")
@@ -421,16 +467,33 @@ def mainfunc(n):
     # secret = 'प्रकाश'
     # secret = 'लर्त्रण'
 
+    #copts = []
+    #opts = st.columns(3)
+    #opts = st.columns(3)
+    #copts.append(opts[0].checkbox('टिपा'))
+    #copts.append(opts[1].checkbox('तपशील'))
+
+    #if copts[0]:
+    #    notes()
+    # if copts[1]:
+    #     details()
+
+## Trying modal. May replace tipa and tapashil with this.
+
     copts = []
     opts = st.columns(3)
-    #opts = st.columns(3)
-    copts.append(opts[0].checkbox('टिपा'))
-    copts.append(opts[1].checkbox('तपशील'))
+    copts.append(opts[0].button('?'))
+    copts.append(opts[1].button('तपशील'))
 
     if copts[0]:
-        notes()
+        with modal.container():
+            notes2()
+
     if copts[1]:
-        details()
+        with modal.container():
+            details()
+
+###############
 
     depth = 0
     getinput(secret,imunicode,1,depth)
@@ -458,7 +521,8 @@ def mainfunc(n):
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button('उत्तर'):
-            reveal()
+            with modal.container():
+                reveal()
     with col2:
         if st.button('नवी खेळी'):
             newplay()
