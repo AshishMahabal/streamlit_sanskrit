@@ -218,6 +218,7 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
     ysconsonents = []
     ytconsonents = []
     checklist = []
+    # Check for and exclude G and B
     for i in range(len(sconsonents)):
         if ss[i] == 'X':
             ysconsonents.append(sconsonents[i])
@@ -227,17 +228,27 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
             ysconsonents.append(['']) # changed this from 0 for set union to work
             ytconsonents.append(['']) # changed this from 0 for set union to work
     
+    # Now we have a possibly smaller string to work with
     ys = []
     accountedc = [] # this is for the consonants
 
-    for i in checklist:
-        #print(i)
-        for j in checklist:
-            if ytconsonents[i] != ['']: # skip pure vowels
-                if j not in accountedc and (set(ytconsonents[i]) & set().union(*ysconsonents)):
+    # for i in checklist:
+    #     #print(i)
+    #     for j in checklist:
+    #         if ytconsonents[i] != ['']: # skip pure vowels
+    #             if j not in accountedc and (set(ytconsonents[j]) & set().union(*ysconsonents)):
+    #                 #print("found in union")
+    #                 ys.append(j)
+    #                 accountedc.append(i)
+    #                 #print("appending %d to ys due to consonent match" % i)
+
+    for i in checklist: # i is from test, so ytconsonants
+        if ytconsonents[i] != ['']: # skip pure vowels
+            for j in checklist: # j is from secret, so ysconsonants
+                if j not in accountedc and (set(ytconsonents[i]) & set(ysconsonents[j])):
                     #print("found in union")
                     ys.append(i)
-                    accountedc.append(i)
+                    accountedc.append(j)
                     #print("appending %d to ys due to consonent match" % i)
     uniq_ys = set(ys)
     
@@ -279,24 +290,24 @@ def notes():
 def notes2():
     #blacktext("*Notes:*")
     blacktext("Enter a Marathi word of suggested length and hit tab or enter.")
-    blacktext("> The vowel shape indicates the vowels in the word e.g. `अअआ` could mean `अकरा` or `बछडा` etc.")
+    blacktext("> The vowel shape indicates the vowels in the word e.g. अअआ could mean अकरा or बछडा etc.")
     blacktext("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
         the first is a pure vowel, the second is a single consonant (with a vowel), and the\
-        third is a two-consonant combo (with a vowel) e.g. `अभद्र` or `आरक्त` or `अलिप्त`.\
-        Please note that `क्ष (= क् + ष)` and `ज्ञ (= ज् + ञ)` are both conjuncts of size 2.")
-    blacktext("> Anusvar is not counted. If the code suggests a `म`, it could be `मं`\
-        and if it suggests `अ` it could be `अं`.")
-    blacktext("> Visargas `:`, ardha-chandra `ॅ`, chandra-bindu `ॅं`, halant (`्`) are not in\
+        third is a two-consonant combo (with a vowel) e.g. अभद्र or आरक्त or अलिप्त.\
+        Please note that क्ष (= क् + ष) and ज्ञ (= ज् + ञ) are both conjuncts of size 2.")
+    blacktext("> Anusvar is not counted. If the code suggests a म, it could be मं\
+        and if it suggests अ it could be अं.")
+    blacktext("> Visargas :, ardha-chandra ॅ, chandra-bindu ॅं, halant (्) are not in\
          the secret words.")
     blacktext("%s Green: letter is correct in all respects (position, consonant, and vowel." % imunicode['G'])
     blacktext("%s Blue: at least one consonant matches at that position\
-         e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc." %imunicode['B'])
+         e.g. क for क्षे (=क्+षे), के for क्षे, प for पु, इ for ओ etc." %imunicode['B'])
     blacktext("%s Yellow: at least one consonant at that position matches one at another position." % imunicode['Y'])
     blacktext("%s Red: the consonant does not match any letter not already matched. Blue and Yellow take\
         precedence over Red, so the following situation is possible: the secret word is\
-        `कर्तव्य` and you have guessed `कातरी`. The `का` gives you a Blue because `क` matches, the `त` also gives\
-        you a Blue because it matches the `त` in `र् + त्` and finally the `री` gives you a Red despite the \
-        fact that the `र्` matches that in `र्त` because something has already matched the second position." % imunicode['R'])
+        कर्तव्य and you have guessed कातरी. The का gives you a Blue because क matches, the त also gives\
+        you a Blue because it matches the त in र् + त् and finally the री gives you a Red despite the \
+        fact that the र् matches that in र्त because something has already matched the second position." % imunicode['R'])
     blacktext("> When you get all Greens, you win.")
     #blacktext("More examples will be added under 'Details'.")
     #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
@@ -316,27 +327,33 @@ def blacktext(text):
     mtext = "<font color=‘black’>%s</font>" % text
     st.markdown(mtext,unsafe_allow_html=True )
 
+def colortext(text,color):
+    mtext = "<font color=%s>%s</font>" % (color,text)
+    st.markdown(mtext,unsafe_allow_html=True )
+
 def details():
     blacktext("*Details:*")
     blacktext("The list of secret words is about 4000 long. A random one is\
         presented along with its shape: what vowels are in each letter, and\
         how many consonants are in each.")
-    blacktext("Thus, if the word is `बछडा`, the स्वराकार is `अअआ` and the\
-        `व्यंजनसंख्या` is `१११`. `अप्सरा` has the same स्वराकार (`अअआ`) but the\
-        `व्यंजनसंख्या` is `०२१`.")
+    blacktext("Thus, if the word is बछडा, the स्वराकार is अअआ and the\
+        व्यंजनसंख्या is १११. अप्सरा has the same स्वराकार (अअआ) but the\
+        व्यंजनसंख्या is ०२१.")
     blacktext("When trying words, you do not have to stick to the given shape.\
         In fact, it would often be advantageous to try additional consonants, and perhaps\
         also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
         (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
-        of about 5 to 8 (e.g. `उखाणा` expands to `उ + ख् + आ + ण् + आ` for a total of 5 while\
-        `पर्याप्त` is 8 with `प् + अ + र् + य् + आ + प् + त् + अ`). By giving the स्वराकार the requirement\
+        of about 5 to 8 (e.g. उखाणा expands to उ + ख् + आ + ण् + आ for a total of 5 while\
+        पर्याप्त is 8 with प् + अ + र् + य् + आ + प् + त् + अ). By giving the स्वराकार the requirement\
         of guessing letters is reduced by 3.")
     blacktext("Another trick is to use more common consonants early, sometimes combined into\
-        common conjuncts like `प्र` and `त्र`.")
+        common conjuncts like प्र and त्र.")
     blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
 
 def reveal():
-    blacktext('`%s`' % st.session_state['secret'])
+    t2put = colortext('%s' % st.session_state['secret'],'blue')
+    st.components.v1.html(t2put,width=50,height=50)
+    #blacktext('`%s`' % st.session_state['secret'])
     #st.markdown('`%s`' % st.session_state['secret'])
 
 def newplay():
@@ -362,10 +379,11 @@ def getinput(secret,imunicode,onemore,depth):
                     forcol1 = forcol1 + '\n' + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
                     st.write("%8s %s %s" % (forcol1,"  ",st.session_state['mylist'][i][0]))
                 if i == len(st.session_state['mylist'])-1:
-                    with col2:
-                        if st.button('खुलासा %s' % mdigits[i]):
-                            with modal.container():
-                                explain(st.session_state['mylist'][i][1])
+                    if st.session_state['mylist'][i][1] != 'G' * len(split_clusters(secret)):
+                        with col2:
+                            if st.button('खुलासा %s' % mdigits[i]):
+                                with modal.container():
+                                    explain(st.session_state['mylist'][i][1])
         if onemore:
             col1, col2 = st.columns([16,12])
             with col1:
@@ -453,6 +471,8 @@ def explain(theScore):
         blacktext("There %s %d %s indicating that %d letter(s) do not match even partially (this could exclude certain partial matches accounted for by %s and %s)" % (isare[scoreCount['R']],scoreCount['R'],imunicode['R'],scoreCount['R'],imunicode['B'],imunicode['Y']))
 
 def copyright():
+    #components.html("""<hr style="height:1px;border:none;color:#333;background-color:#333;" /> """)
+    st.components.v1.html("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """,height=20,width=300)
     blacktext("*Copyright 2022*")
     blacktext("All rights reserved.")
     blacktext("We do not collect any personal or location data.")
@@ -495,6 +515,7 @@ def mainfunc(n):
 
     # secret = 'प्रकाश'
     # secret = 'लर्त्रण'
+    # secret = 'प्रसाद'
 
     #copts = []
     #opts = st.columns(3)
@@ -550,16 +571,16 @@ def mainfunc(n):
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button('उत्तर'):
-            with modal.container():
-                reveal()
+            #with modal.container():
+            reveal()
     with col2:
         if st.button('नवी खेळी'):
             newplay()
 
     with col3:
-        if st.button('Copyright etc.'):
-            with modal.container():
-                copyright()
+        if st.button('Copyright'):
+            #with modal.container():
+            copyright()
 
     # The following is for window focus
     components.html(
