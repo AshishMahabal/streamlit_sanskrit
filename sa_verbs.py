@@ -232,16 +232,6 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
     ys = []
     accountedc = [] # this is for the consonants
 
-    # for i in checklist:
-    #     #print(i)
-    #     for j in checklist:
-    #         if ytconsonents[i] != ['']: # skip pure vowels
-    #             if j not in accountedc and (set(ytconsonents[j]) & set().union(*ysconsonents)):
-    #                 #print("found in union")
-    #                 ys.append(j)
-    #                 accountedc.append(i)
-    #                 #print("appending %d to ys due to consonent match" % i)
-
     for i in checklist: # i is from test, so ytconsonants
         if ytconsonents[i] != ['']: # skip pure vowels
             for j in checklist: # j is from secret, so ysconsonants
@@ -294,20 +284,20 @@ def notes2():
     blacktext("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
         the first is a pure vowel, the second is a single consonant (with a vowel), and the\
         third is a two-consonant combo (with a vowel) e.g. अभद्र or आरक्त or अलिप्त.\
-        Please note that क्ष (= क् + ष) and ज्ञ (= ज् + ञ) are both conjuncts of size 2.")
+        Note that क्ष (= क् + ष) and ज्ञ (= ज् + ञ) are both conjuncts of size 2.")
     blacktext("> Anusvar is not counted. If the code suggests a म, it could be मं\
         and if it suggests अ it could be अं.")
     blacktext("> Visargas :, ardha-chandra ॅ, chandra-bindu ॅं, halant (्) are not in\
          the secret words.")
-    blacktext("%s Green: letter is correct in all respects (position, consonant, and vowel." % imunicode['G'])
+    blacktext("%s Green: letter correct in position, consonant(s), and vowel." % imunicode['G'])
     blacktext("%s Blue: at least one consonant matches at that position\
-         e.g. क for क्षे (=क्+षे), के for क्षे, प for पु, इ for ओ etc." %imunicode['B'])
-    blacktext("%s Yellow: at least one consonant at that position matches one at another position." % imunicode['Y'])
+         e.g. का for क्षे (=क्+षे), प for पु, इ for ओ etc." %imunicode['B'])
+    blacktext("%s Yellow: at least one consonant matches at another position." % imunicode['Y'])
     blacktext("%s Red: the consonant does not match any letter not already matched. Blue and Yellow take\
-        precedence over Red, so the following situation is possible: the secret word is\
-        कर्तव्य and you have guessed कातरी. The का gives you a Blue because क matches, the त also gives\
-        you a Blue because it matches the त in र् + त् and finally the री gives you a Red despite the \
-        fact that the र् matches that in र्त because something has already matched the second position." % imunicode['R'])
+        precedence over Red, so the following is possible: the secret word is\
+        कर्तव्य and you have guessed कातरी. The का gets a Blue because क matches, the त also gest\
+        a Blue because it due to the त in र् + त् and finally the री gets a Red despite the \
+         र् matching that in र्त because something has already matched the second position." % imunicode['R'])
     blacktext("> When you get all Greens, you win.")
     #blacktext("More examples will be added under 'Details'.")
     #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
@@ -373,17 +363,23 @@ def getinput(secret,imunicode,onemore,depth):
     with placeholder.container():
         if len(st.session_state['mylist'])>1: 
             for i in range(1,len(st.session_state['mylist'])):
-                col1, col2, col3 = st.columns([10,10,10])
+                col1, col2, col3 = st.columns([10,10,20])
                 with col1: 
                     forcol1 = ''
                     forcol1 = forcol1 + '\n' + ''.join([imunicode[st.session_state['mylist'][i][1][j]] for j in range(len(st.session_state['mylist'][i][1]))])
                     st.write("%8s %s %s" % (forcol1,"  ",st.session_state['mylist'][i][0]))
                 if i == len(st.session_state['mylist'])-1:
-                    if st.session_state['mylist'][i][1] != 'G' * len(split_clusters(secret)):
-                        with col2:
+                    with col2:
+                        if st.session_state['mylist'][i][1] != 'G' * len(split_clusters(secret)):
+                        #with col2:
                             if st.button('खुलासा %s' % mdigits[i]):
                                 with modal.container():
                                     explain(st.session_state['mylist'][i][1])
+                        else:
+                        #with col2:
+                            st.text('तुम्ही जिंकलात')
+                            #st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात')
+            
         if onemore:
             col1, col2 = st.columns([16,12])
             with col1:
@@ -395,10 +391,9 @@ def getinput(secret,imunicode,onemore,depth):
                 st.balloons()
                 st.session_state['balloons'] = 0
             col1, col2 = st.columns([12, 16])
-            with col1:
-                myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात: '+st.session_state['mylist'][-1][0])
+            # with col1:
+            #     myc2 = st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात: '+st.session_state['mylist'][-1][0])
             modalstr = ''
-
             for i in range(1,len(st.session_state['mylist'])):
                 modalstr = modalstr + ''.join([imunicode[k] for k in st.session_state['mylist'][i][1]]) + '\n'
             with col1:
@@ -472,7 +467,7 @@ def explain(theScore):
 
 def copyright():
     #components.html("""<hr style="height:1px;border:none;color:#333;background-color:#333;" /> """)
-    st.components.v1.html("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """,height=20,width=300)
+    #st.components.v1.html("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """,height=20,width=300)
     blacktext("*Copyright 2022*")
     blacktext("All rights reserved.")
     blacktext("We do not collect any personal or location data.")
@@ -531,9 +526,10 @@ def mainfunc(n):
 ## Trying modal. May replace tipa and tapashil with this.
 
     copts = []
-    opts = st.columns(3)
+    opts = st.columns(6)
     copts.append(opts[0].button('?'))
     copts.append(opts[1].button('तपशील'))
+    copts.append(opts[2].button('Copyright'))
 
     if copts[0]:
         with modal.container():
@@ -543,6 +539,9 @@ def mainfunc(n):
         with modal.container():
             details()
 
+    if copts[2]:
+        with modal.container():
+            copyright()
 ###############
 
     depth = 0
@@ -577,10 +576,10 @@ def mainfunc(n):
         if st.button('नवी खेळी'):
             newplay()
 
-    with col3:
-        if st.button('Copyright'):
-            #with modal.container():
-            copyright()
+    # with col3:
+    #     if st.button('Copyright'):
+    #         with modal.container():
+    #             copyright()
 
     # The following is for window focus
     components.html(
