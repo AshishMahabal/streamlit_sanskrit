@@ -372,7 +372,9 @@ def getinput(secret,imunicode,onemore,depth):
                     with col2:
                         if st.session_state['mylist'][i][1] != 'G' * len(split_clusters(secret)):
                         #with col2:
-                            if st.button('खुलासा %s' % mdigits[i]):
+                            blab = 'खुलासा %s' % mdigits[i]
+                            bkey = 'खुलासा %s' % st.session_state['gcount']
+                            if st.button(blab,key=bkey):
                                 with modal.container():
                                     explain(st.session_state['mylist'][i][1])
                         else:
@@ -405,6 +407,7 @@ def getinput(secret,imunicode,onemore,depth):
 
     if myc2.strip():
         ttclust = split_clusters(myc2.strip())
+        #st.write(ttclust)
         goodstr=1
         for j in range(len(ttclust)):
             for k in range(len(ttclust[j])): # eliminates non devnag
@@ -421,6 +424,7 @@ def getinput(secret,imunicode,onemore,depth):
         st.session_state['gcount'] += 1
         placeholder.empty()
         depth += 1
+        #st.write(goodstr,st.session_state['gcount'],depth)
         if goodstr !=0 and myc2score == 'G' * len(split_clusters(secret)):
                 #st.write("तुम्ही जिंकलात!")
                 write2firebase(st.session_state['sessionid'],st.session_state['mylist'])
