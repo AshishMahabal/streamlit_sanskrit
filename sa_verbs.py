@@ -12,6 +12,7 @@ import json
 import datetime
 import uuid
 from collections import Counter
+from collections import defaultdict
 
 st.title('शब्दखुूळ (तिनाक्षरी)')
 #st.sidebar.title("Word Length")
@@ -21,6 +22,9 @@ st.title('शब्दखुूळ (तिनाक्षरी)')
 # 	["2", "3", "4","5"],
 # 	index=1
 # )
+
+def def_value():
+    return uuid.uuid4().hex
 
 # Globals
 wlen = 3
@@ -38,7 +42,12 @@ vowel_subs = {'अ':1, 'आ':2, 'इ':3, 'ई':4, 'उ':5, 'ऊ':6, 'ऋ':11, '�
           '।':1, 'ा':2, 'ि':3, 'ी':4, 'ु':5, 'ू':6, 'ृ':11,  'े':7, 'ै':8,  'ो':9, 'ौ':10}
 
 vowel_revsub = {1:'अ', 2:'आ', 3:'इ', 4:'ई', 5:'उ', 6:'ऊ', 11:'ऋ', 7:'ए', 8:'ऐ',  9:'ओ', 10:'औ'}
-mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५',6:'६',7:'७',8:'८',9:'९',10:'१०', 11: '११', 12:'१२'}
+mmdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५',6:'६',7:'७',8:'८',9:'९',10:'१०', 
+    11: '११', 12:'१२', 13:'५६',14:'९९',15:'१०१',16:'१७५७',17:'अनंत',18:'नंतर'}
+#mdigits = {0:'०',1:'१',2:'२',3:'३',4:'४',5:'५'}
+mdigits = defaultdict(def_value)
+for i in range(19):
+    mdigits[i] = mmdigits[i]
 imunicode = {'R':'🟥','R':'❌','G':'🟩','G':'✅','B':'🟦','B':'🔵','Y':'🟨'}
 
 # The following two functions are from the code Abhijit had found somewhere
@@ -477,8 +486,9 @@ def copyright():
     blacktext("We do not collect any personal or location data.")
     blacktext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[http://twitter.com/aschig](@aschig)")
     blacktext("Credits: Inspiration from Wordle. Wordnet's wordlist.")
-    blacktext("Credits: Alpha-testers:")
-    blacktext("Credits: Beta-testers:")
+    blacktext("Python + Streamlit")
+    blacktext("Credits: Alpha-testers: ...")
+    blacktext("Credits: Beta-testers: ...")
 
 def mainfunc(n):
     '''
@@ -570,6 +580,7 @@ def mainfunc(n):
     # st.markdown(uandunusedcl[:30])
     # st.markdown(uandunusedcl[30:])
     st.markdown(uandunusedcl)
+
 
     col1, col2, col3 = st.columns(3)
     with col1:
