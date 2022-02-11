@@ -14,6 +14,12 @@ import uuid
 from collections import Counter
 from collections import defaultdict
 
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+local_css("style.css")
+
 st.title('शब्दखुूळ (तिनाक्षरी)')
 #st.sidebar.title("Word Length")
 
@@ -356,7 +362,7 @@ def reveal():
     #st.markdown('`%s`' % st.session_state['secret'])
 
 def newplay():
-    st.markdown("placeholder")
+    st.markdown("placeholder.\nReload for now.")
     # st.markdown("Another play")
     # del st.session_state['secret']
     # placeholder0.empty()
@@ -392,7 +398,7 @@ def getinput(secret,imunicode,onemore,depth):
                             #st.text_input('','',key=st.session_state['gcount'],disabled=True,placeholder='तुम्ही जिंकलात')
             
         if onemore:
-            col1, col2 = st.columns([16,12])
+            col1, col2 = st.columns([20,10])
             with col1:
                 #oldprompt = 'मराठी शब्द टाईप करा'
                 prompt = "गुपितातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape']))
@@ -418,13 +424,19 @@ def getinput(secret,imunicode,onemore,depth):
         ttclust = split_clusters(myc2.strip())
         #st.write(ttclust)
         goodstr=1
-        for j in range(len(ttclust)):
-            for k in range(len(ttclust[j])): # eliminates non devnag
-                if ord(ttclust[j][k]) < 2304 or ord(ttclust[j][k]) > 2431:
-                    goodstr = 0
-            for k in range(len(consonant_structure(myc2.strip()))): # eliminates clusters with > 4 consonants
-                if consonant_structure(myc2.strip())[k] not in ['०','१','२','३','४']:
-                    goodstr = 0
+        goodstr = check_validity(ttclust)
+        # for j in range(len(ttclust)):    
+        #     for k in range(len(ttclust[j])): # eliminates non devnag
+        #         # 0900 should go
+        #         # 094E to 095F should go
+        #         # 0964 to 0971 should go
+        #         # 0973 to 097F should go
+        #         # Allowed: 2305..2383; 2400..2403; 2412 (check)
+        #         if ord(ttclust[j][k]) < 2304 or ord(ttclust[j][k]) > 2431:
+        #             goodstr = 0
+        #     for k in range(len(consonant_structure(myc2.strip()))): # eliminates clusters with > 4 consonants
+        #         if consonant_structure(myc2.strip())[k] not in ['०','१','२','३','४']:
+        #             goodstr = 0
         if len(ttclust) != len(split_clusters(secret)):
             goodstr = 0
         if goodstr == 1:
@@ -489,6 +501,70 @@ def copyright():
     blacktext("Python + Streamlit")
     blacktext("Credits: Alpha-testers: ...")
     blacktext("Credits: Beta-testers: ...")
+
+
+vclust = [2309, 2310, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318, 2319, 2320,
+    2321, 2322, 2323, 2324, 2400, 2401, 2418]
+cclust = [i for i in range(2325,2362)]
+kclust = [2366, 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377,
+    2378, 2379, 2380, 2383, 2402, 2403]
+hclust = [2381]
+aclust = [2305, 2306]
+viclust = [2307]
+
+revclust = {}
+for i in range(2304,2431):
+    revclust[i] = 'n'
+for i in vclust:
+    revclust[i] = 'v'
+for i in cclust:
+    revclust[i] = 'c'
+for i in kclust:
+    revclust[i] = 'k'
+for i in hclust:
+    revclust[i] = 'h'
+for i in aclust:
+    revclust[i] = 'a'
+for i in viclust:
+    revclust[i] = 'vi'
+
+def check_validity(myc2c):
+# Rules:
+# At most one kanha-matra
+# one anusvara or one cb can combine with kanha-matra
+# one visarga ok
+# kanha-matra can not combine with vowels
+# 2304 to 2431 is the ord range allowed for devnag splits
+    for j in range(len(myc2c)):
+        ctypes = {}
+        clust_occ = {'v':0,'c':0,'k':0,'h':0,'a':0,'vi':0,'n':0}
+        allowed = 1
+        for k in range(len(myc2c[j])):
+            if ord(myc2c[j][k]) < 2304 or ord(myc2c[j][k]) > 2431:
+                #st.write("No!")
+                return 0
+            clust_occ[revclust[ord(myc2c[j][k])]] += 1
+            #st.write(j,k,ord(myc2c[j][k]),myc2c[j][k])
+        if clust_occ['n'] > 0:
+            #st.write("disallowed character")
+            return 0
+        if clust_occ['k'] > 1:
+            #st.write("too many kanha-matra")
+            return 0
+        if clust_occ['a'] > 1:
+            #st.write("too many anusvara/cb")
+            return 0
+        if clust_occ['vi'] > 1:
+            #st.write("too many visargas")
+            return 0
+        if clust_occ['k'] > 0 and clust_occ['v'] > 0:
+            #st.write("kanha-matra can not combine with pure vowels")
+            return 0
+        if clust_occ['c'] > 4:
+            #st.write("too many consonants in one letter")
+            return 0
+
+    return allowed
 
 def mainfunc(n):
     '''
