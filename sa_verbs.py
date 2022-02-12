@@ -313,7 +313,7 @@ def blacktext(text):
     st.markdown(mtext,unsafe_allow_html=True )
 
 def whitetext(text):
-    mtext = "<font color='blue'>%s</font>" % text
+    mtext = "<font color='magenta'>%s</font>" % text
     st.markdown(mtext,unsafe_allow_html=True )
 
 def colortext(text,color):
