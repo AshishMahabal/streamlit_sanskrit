@@ -265,55 +265,40 @@ def test_for_yellows_conly(ss,sconsonents,tconsonents):
     
     return ss
 
-# The following few functions are for the checkboxes
-def notes():
-    st.subheader("Notes:")
-    st.markdown("Enter a Marathi word of suggested length and hit tab or enter.")
-    st.markdown("> The vowel shape indicates the vowels in the word e.g. `अअआ` could mean `अकरा` or `बछडा` etc.")
-    st.markdown("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
-        the first is a pure vowel, the second is a single consonant (with a vowel), and the\
-        third is a two-consonant combo (with a vowel) e.g. `अभद्र` or `आरक्त` or `अलिप्त`.\
-        Please note that `क्ष (= क् + ष)` and `ज्ञ (= ज् + ञ)` are both conjuncts of size 2.")
-    st.markdown("> Anusvar is not counted. If the codes above suggest a `म`, it could be `मं`\
-        and if it suggests `अ` it could be `अं`.")
-    st.markdown("> Visargas `:`, ardha-chandra `ॅ`, chandra-bindu `ॅं`, halant (`्`) are not in\
-         the secret words.")
-    st.markdown("%s Green means that that letter is correct in all respects (position, consonant, and vowel." % imunicode['G'])
-    st.markdown("%s Blue indicates that at least one consonant matches at that position\
-         e.g. `क` for `क्षे (=क्+षे)`, `के` for `क्षे`, `प` for `पु`, `इ` for `ओ` etc." %imunicode['B'])
-    st.markdown("%s Yellow reveals that at least one consonant at that position matches one at another position." % imunicode['Y'])
-    st.markdown("%s Red suggests that that consonant may not match anything in the word. Blue and Yellow take\
-        precedence over Red, so the following situation is possible: the secret word is\
-        `कर्तव्य` and you have guessed `कातरी`. The `का` gives you a Blue because `क` matches, the `त` also gives\
-        you a Blue because it matches the `त` in `र् + त्` and finally the `री` gives you a Red despite the \
-        fact that the `र्` matches that in `र्त` because something has already matched the second position." % imunicode['R'])
-    st.write("> When you get all Greens, you win.")
-    st.write("More examples will be added under 'Details'.")
-    #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
-    #st.markdown(str1)
+# The following few functions are for the checkboxes/buttons
 
 def notes2():
     #blacktext("*Notes:*")
-    blacktext("Enter a Marathi word of suggested length and hit tab or enter.")
-    blacktext("> The vowel shape indicates the vowels in the word e.g. अअआ could mean अकरा or बछडा etc.")
-    blacktext("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
-        the first is a pure vowel, the second is a single consonant (with a vowel), and the\
-        third is a two-consonant combo (with a vowel) e.g. अभद्र or आरक्त or अलिप्त.\
-        Note that क्ष (= क् + ष) and ज्ञ (= ज् + ञ) are both conjuncts of size 2.")
-    blacktext("> Anusvar is not counted. If the code suggests a म, it could be मं\
-        and if it suggests अ it could be अं.")
-    blacktext("> Visargas :, ardha-chandra ॅ, chandra-bindu ॅं, halant (्) are not in\
-         the secret words.")
-    blacktext("%s Green: letter correct in position, consonant(s), and vowel." % imunicode['G'])
-    blacktext("%s Blue: at least one consonant matches at that position\
-         e.g. का for क्षे (=क्+षे), प for पु, इ for ओ etc." %imunicode['B'])
-    blacktext("%s Yellow: at least one consonant matches at another position." % imunicode['Y'])
-    blacktext("%s Red: the consonant does not match any letter not already matched. Blue and Yellow take\
-        precedence over Red, so the following is possible: the secret word is\
-        कर्तव्य and you have guessed कातरी. The का gets a Blue because क matches, the त also gest\
-        a Blue because it due to the त in र् + त् and finally the री gets a Red despite the \
-         र् matching that in र्त because something has already matched the second position." % imunicode['R'])
-    blacktext("> When you get all Greens, you win.")
+    blacktext("शब्द ओळखा (स्वर/व्यंजन)")
+    blacktext("`अअआ`/`०११` = अकरा/अमका/..")
+    blacktext("`अअआ`/`१११` = बंगला/बगळा/..")
+    blacktext("`अअअ`/`११२` = समक्ष/सशक्त/..")
+    blacktext("`उआई`/`०३१` = उत्क्रांती")
+    blacktext("%s अचूक" % imunicode['G'])
+    blacktext("%s किंचीत चूक" % imunicode['B'])
+    blacktext("%s जागा चुकली" % imunicode['Y'])
+    blacktext("%s चूक*" % imunicode['R'])
+    blacktext("* तपशील पहा")
+    # blacktext("Enter a Marathi word of suggested length and hit tab or enter.")
+    # blacktext("> The vowel shape indicates the vowels in the word e.g. अअआ could mean अकरा or बछडा etc.")
+    # blacktext("> The consonant shape indicates number of consonants in each letter e.g. 012 indicates that\
+    #     the first is a pure vowel, the second is a single consonant (with a vowel), and the\
+    #     third is a two-consonant combo (with a vowel) e.g. अभद्र or आरक्त or अलिप्त.\
+    #     Note that क्ष (= क् + ष) and ज्ञ (= ज् + ञ) are both conjuncts of size 2.")
+    # blacktext("> Anusvar is not counted. If the code suggests a म, it could be मं\
+    #     and if it suggests अ it could be अं.")
+    # blacktext("> Visargas :, ardha-chandra ॅ, chandra-bindu ॅं, halant (्) are not in\
+    #      the secret words.")
+    # blacktext("%s Green: letter correct in position, consonant(s), and vowel." % imunicode['G'])
+    # blacktext("%s Blue: at least one consonant matches at that position\
+    #      e.g. का for क्षे (=क्+षे), प for पु, इ for ओ etc." %imunicode['B'])
+    # blacktext("%s Yellow: at least one consonant matches at another position." % imunicode['Y'])
+    # blacktext("%s Red: the consonant does not match any letter not already matched. Blue and Yellow take\
+    #     precedence over Red, so the following is possible: the secret word is\
+    #     कर्तव्य and you have guessed कातरी. The का gets a Blue because क matches, the त also gest\
+    #     a Blue because it due to the त in र् + त् and finally the री gets a Red despite the \
+    #      र् matching that in र्त because something has already matched the second position." % imunicode['R'])
+    # blacktext("> When you get all Greens, you win.")
     #blacktext("More examples will be added under 'Details'.")
     #str1 = "शब्दातील व्यंजनांची संख्या - अक्षरांगणीक: `%s` (0: शुद्ध स्वर, 1: क..ह, 2: प्र त्र क्ष ज्ञ ष्ट, 3: ष्ट्य,त्त्व,..)" % ''.join(cshape)
     #blacktext(str1)
@@ -337,23 +322,49 @@ def colortext(text,color):
     st.markdown(mtext,unsafe_allow_html=True )
 
 def details():
-    blacktext("*Details:*")
-    blacktext("The list of secret words is about 4000 long. A random one is\
-        presented along with its shape: what vowels are in each letter, and\
-        how many consonants are in each.")
-    blacktext("Thus, if the word is बछडा, the स्वराकार is अअआ and the\
-        व्यंजनसंख्या is १११. अप्सरा has the same स्वराकार (अअआ) but the\
-        व्यंजनसंख्या is ०२१.")
-    blacktext("When trying words, you do not have to stick to the given shape.\
-        In fact, it would often be advantageous to try additional consonants, and perhaps\
-        also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
-        (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
-        of about 5 to 8 (e.g. उखाणा expands to उ + ख् + आ + ण् + आ for a total of 5 while\
-        पर्याप्त is 8 with प् + अ + र् + य् + आ + प् + त् + अ). By giving the स्वराकार the requirement\
-        of guessing letters is reduced by 3.")
-    blacktext("Another trick is to use more common consonants early, sometimes combined into\
-        common conjuncts like प्र and त्र.")
-    blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
+    #blacktext("*Details:*")
+    blacktext("जवळजवळ 4000 शब्दांच्या यादीतून एक शब्द विनाक्रम निवडला जातो. त्याचा घाट (स्वराकार आणि\
+        व्यंजनसंख्या) सांगितली जाते.")
+    blacktext("बछडा चा स्वराकार अअआ आणि व्यंजनसंख्या १११.")
+    blacktext("अप्सरा चे अअआ आणि ०२१.")
+    blacktext("शब्द शोधतांता कोणत्याही घाटाचे चालतात. अनेकदा मुद्दाम जोडाक्षरे वापरल्याने फायदा होतो (प्र, त्र वगैरे).")
+    blacktext("4-6 प्रयत्नांत उत्तर मिळू शकतं.")
+    blacktext("काही टिपा:")
+    blacktext("अनुस्वार स्वरांमध्येही गणले जात नाहीत आणि व्यंजनांमध्येही नाही.")
+    blacktext("स्वरक्रमात अ असल्यास तो म असेल किंवा मं (किंवा क, कं, ... आणि व्यंजनसंख्या शून्य असल्यास अ किंवा अं)")
+    blacktext("क्ष (= क् + ष) आणि ज्ञ (= ज् + ञ) ही जोडाक्षरे आहेत.")
+    blacktext("%s %s %s च्या सानिध्यात %s फसवा ठरू शकतो. समजा गूप्त शब्द आहे कर्तव्य आणि तुमचा प्रयत्न आहे कातरी." % (imunicode['G'], imunicode['B'], imunicode['Y'], imunicode['R']))
+    blacktext("का आणि क अर्धवट जुळतात म्हणून का ला मिळतो  %s. त ला देखिल मिळतो %s \
+        कारण तो र् + त् मधील त शी जुळतो. शेवटच्या री ला मात्र त्याच र्त मधील र ला जुळूनही %s मिळतो \
+        कारण र्त ला आधिच एक गूण बहाल झाला आहे (%s)." % (imunicode['B'], imunicode['B'], imunicode['R'], imunicode['B']))
+    blacktext("%s %s %s %s या क्रमाने गूण बहाल केले जातात, आणि एका स्थानाला एकच गूण मिळू शकतो." % (imunicode['G'], imunicode['B'], imunicode['Y'], imunicode['R']))
+    #      र् matching that in र्त because something has already matched the second position.")
+    #blacktext("When trying words, you do not have to stick to the given shape.\
+        # In fact, it would often be advantageous to try additional consonants, and perhaps\
+        # also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
+        # (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
+        # of about 5 to 8 (e.g. उखाणा expands to उ + ख् + आ + ण् + आ for a total of 5 while\
+        # पर्याप्त is 8 with प् + अ + र् + य् + आ + प् + त् + अ). By giving the स्वराकार the requirement\
+        # of guessing letters is reduced by 3.")
+
+    #blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
+    # blacktext("*Details:*")
+    # blacktext("The list of secret words is about 4000 long. A random one is\
+    #     presented along with its shape: what vowels are in each letter, and\
+    #     how many consonants are in each.")
+    # blacktext("Thus, if the word is बछडा, the स्वराकार is अअआ and the\
+    #     व्यंजनसंख्या is १११. अप्सरा has the same स्वराकार (अअआ) but the\
+    #     व्यंजनसंख्या is ०२१.")
+    # blacktext("When trying words, you do not have to stick to the given shape.\
+    #     In fact, it would often be advantageous to try additional consonants, and perhaps\
+    #     also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
+    #     (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
+    #     of about 5 to 8 (e.g. उखाणा expands to उ + ख् + आ + ण् + आ for a total of 5 while\
+    #     पर्याप्त is 8 with प् + अ + र् + य् + आ + प् + त् + अ). By giving the स्वराकार the requirement\
+    #     of guessing letters is reduced by 3.")
+    # blacktext("Another trick is to use more common consonants early, sometimes combined into\
+    #     common conjuncts like प्र and त्र.")
+    # blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
 
 def reveal():
     t2put = colortext('%s' % st.session_state['secret'],'blue')
@@ -401,7 +412,8 @@ def getinput(secret,imunicode,onemore,depth):
             col1, col2 = st.columns([20,10])
             with col1:
                 #oldprompt = 'मराठी शब्द टाईप करा'
-                prompt = "गुपितातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape']))
+                #prompt = "गुपितातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape']))
+                prompt = "स्वरक्रम `%s` व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape']))
                 myc2 = st.text_input('','',key=st.session_state['gcount'],placeholder=prompt)
         else:
             if st.session_state['balloons'] == 1:
@@ -442,6 +454,7 @@ def getinput(secret,imunicode,onemore,depth):
         if goodstr == 1:
             myc2score = score(secret,myc2.strip())
             st.session_state['mylist'].append([myc2.strip(),myc2score,0])
+
         st.session_state['gcount'] += 1
         placeholder.empty()
         depth += 1
@@ -480,29 +493,44 @@ def get_mdigits(n):
 def explain(theScore):
     scoreCount = Counter(theScore)
     isare = {0:'are', 1:'is', 2:'are', 3:'are'}
-    blacktext("*Score details*")
+    blacktext("*खुलासा*")
     if scoreCount['G']>0:
-        blacktext("There %s %d %s indicating that %d letter(s) match exactly" % (isare[scoreCount['G']],scoreCount['G'],imunicode['G'],scoreCount['G']))
+        blacktext("%d %s %d अचूक" % (scoreCount['G'],imunicode['G'],scoreCount['G']))
     if scoreCount['B']>0:
-        blacktext("There %s %d %s indicating that %d letter(s) match partially" % (isare[scoreCount['B']],scoreCount['B'],imunicode['B'],scoreCount['B']))
+        blacktext("%d %s %d किंचीत चूक" % (scoreCount['B'],imunicode['B'],scoreCount['B']))
     if scoreCount['Y']>0:
-        blacktext("There %s %d %s indicating that %d letter(s) match elsewhere (partially or fully - barring those already accounted by %s and %s)" % (isare[scoreCount['Y']],scoreCount['Y'],imunicode['Y'],scoreCount['Y'],imunicode['G'],imunicode['B']))
+        blacktext("%d %s %d चूक जागा" % (scoreCount['Y'],imunicode['Y'],scoreCount['Y']))
     if scoreCount['R']>0:
-        blacktext("There %s %d %s indicating that %d letter(s) do not match even partially (this could exclude certain partial matches accounted for by %s and %s)" % (isare[scoreCount['R']],scoreCount['R'],imunicode['R'],scoreCount['R'],imunicode['B'],imunicode['Y']))
+        if scoreCount['G']>0 or scoreCount['B']>0 or scoreCount['Y']>0:
+            blacktext("%d %s %d चूक*" % (scoreCount['R'],imunicode['R'],scoreCount['R']))
+            blacktext("* तपशील पहा")
+        else:
+            blacktext("%d %s %d चूक" % (scoreCount['R'],imunicode['R'],scoreCount['R']))
+
+    # if scoreCount['G']>0:
+    #     blacktext("There %s %d %s indicating that %d letter(s) match exactly" % (isare[scoreCount['G']],scoreCount['G'],imunicode['G'],scoreCount['G']))
+    # if scoreCount['B']>0:
+    #     blacktext("There %s %d %s indicating that %d letter(s) match partially" % (isare[scoreCount['B']],scoreCount['B'],imunicode['B'],scoreCount['B']))
+    # if scoreCount['Y']>0:
+    #     blacktext("There %s %d %s indicating that %d letter(s) match elsewhere (partially or fully - barring those already accounted by %s and %s)" % (isare[scoreCount['Y']],scoreCount['Y'],imunicode['Y'],scoreCount['Y'],imunicode['G'],imunicode['B']))
+    # if scoreCount['R']>0:
+    #     blacktext("There %s %d %s indicating that %d letter(s) do not match even partially (this could exclude certain partial matches accounted for by %s and %s)" % (isare[scoreCount['R']],scoreCount['R'],imunicode['R'],scoreCount['R'],imunicode['B'],imunicode['Y']))
 
 def copyright():
     #components.html("""<hr style="height:1px;border:none;color:#333;background-color:#333;" /> """)
     #st.components.v1.html("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """,height=20,width=300)
-    blacktext("*Copyright 2022*")
-    blacktext("All rights reserved.")
+    blacktext("*Copyright 2022* (All rights reserved.)")
+    blacktext("Developed by Ashish Mahabal using Python + Streamlit (and pinch of CSS)")
+    blacktext("Credits:")
+    blacktext("Inspiration from Wordle. Wordnet's wordlist.")
+    blacktext("Alpha-testers: [Abhijit, Anita , Jay, Anu] Mahabal ")
+    blacktext("Beta-testers: Chaitali Parashare, Rohit Gawande")
     blacktext("We do not collect any personal or location data.")
-    blacktext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[http://twitter.com/aschig](@aschig)")
-    blacktext("Credits: Inspiration from Wordle. Wordnet's wordlist.")
-    blacktext("Python + Streamlit")
-    blacktext("Credits: Alpha-testers: ...")
-    blacktext("Credits: Beta-testers: ...")
+    blacktext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[twitter](https://twitter.com/aschig)")
 
-
+# devnagari letter-set in unicode is assigned to the 0900-097F block (==2304-2431)
+# https://unicode.org/charts/PDF/U0900.pdf
+# Separate the characters into vovels, consonants, kanha-matra, halant, anusvara, visarga
 vclust = [2309, 2310, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318, 2319, 2320,
     2321, 2322, 2323, 2324, 2400, 2401, 2418]
 cclust = [i for i in range(2325,2362)]
@@ -513,38 +541,41 @@ aclust = [2305, 2306]
 viclust = [2307]
 
 revclust = {}
-for i in range(2304,2431):
-    revclust[i] = 'n'
+for i in range(2304,2432):
+    revclust[i] = 'n'   # Not allowed (the default)
 for i in vclust:
-    revclust[i] = 'v'
+    revclust[i] = 'v'   # vowel
 for i in cclust:
-    revclust[i] = 'c'
+    revclust[i] = 'c'   # consonant
 for i in kclust:
-    revclust[i] = 'k'
+    revclust[i] = 'k'   # kanha-matra (only one of these will be allowed)
 for i in hclust:
-    revclust[i] = 'h'
+    revclust[i] = 'h'   # halant
 for i in aclust:
-    revclust[i] = 'a'
+    revclust[i] = 'a'   # anusvara and chandarbindu
 for i in viclust:
-    revclust[i] = 'vi'
+    revclust[i] = 'vi'  # visarga
 
-def check_validity(myc2c):
-# Rules:
-# At most one kanha-matra
-# one anusvara or one cb can combine with kanha-matra
-# one visarga ok
-# kanha-matra can not combine with vowels
-# 2304 to 2431 is the ord range allowed for devnag splits
-    for j in range(len(myc2c)):
-        ctypes = {}
+def check_validity(in_clust):
+    '''
+    input: in_clust 
+    output: 1 if all clusts good; 0 if any bad
+    Rules:
+    At most one kanha-matra
+    one anusvara or one cb can combine with kanha-matra
+    one visarga ok
+    kanha-matra can not combine with vowels
+    2304 to 2431 is the ord range allowed for devnag splits
+    '''
+
+    for j in range(len(in_clust)):
         clust_occ = {'v':0,'c':0,'k':0,'h':0,'a':0,'vi':0,'n':0}
-        allowed = 1
-        for k in range(len(myc2c[j])):
-            if ord(myc2c[j][k]) < 2304 or ord(myc2c[j][k]) > 2431:
+        for k in range(len(in_clust[j])):
+            if ord(in_clust[j][k]) < 2304 or ord(in_clust[j][k]) > 2431:
                 #st.write("No!")
                 return 0
-            clust_occ[revclust[ord(myc2c[j][k])]] += 1
-            #st.write(j,k,ord(myc2c[j][k]),myc2c[j][k])
+            clust_occ[revclust[ord(in_clust[j][k])]] += 1
+            #st.write(j,k,ord(in_clust[j][k]),in_clust[j][k])
         if clust_occ['n'] > 0:
             #st.write("disallowed character")
             return 0
@@ -564,7 +595,7 @@ def check_validity(myc2c):
             #st.write("too many consonants in one letter")
             return 0
 
-    return allowed
+    return 1
 
 def mainfunc(n):
     '''
@@ -596,42 +627,41 @@ def mainfunc(n):
         st.session_state['cshape'] = consonant_structure(secret)
     secret = st.session_state['secret']
 
-    st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape'])))
+    col2, col1 = st.columns(2)
+    with col1:
+        if st.button('?'):
+            with modal.container():
+                notes2()
+    with col2:
+    #st.markdown("शोधायच्या शब्दातील स्वरक्रम `%s` अक्षरांगणीक व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape'])))
+        st.markdown("शोधा: स्वरक्रम `%s` व्यंजने `%s`" % (''.join(st.session_state['rsshape']),''.join(st.session_state['cshape'])))
+
+
 
     # secret = 'प्रकाश'
     # secret = 'लर्त्रण'
     # secret = 'प्रसाद'
 
-    #copts = []
-    #opts = st.columns(3)
-    #opts = st.columns(3)
-    #copts.append(opts[0].checkbox('टिपा'))
-    #copts.append(opts[1].checkbox('तपशील'))
-
-    #if copts[0]:
-    #    notes()
-    # if copts[1]:
-    #     details()
 
 ## Trying modal. May replace tipa and tapashil with this.
 
-    copts = []
-    opts = st.columns(6)
-    copts.append(opts[0].button('?'))
-    copts.append(opts[1].button('तपशील'))
-    copts.append(opts[2].button('Copyright'))
+    # copts = []
+    # opts = st.columns(6)
+    # #copts.append(opts[0].button('?'))
+    # copts.append(opts[1].button('तपशील'))
+    # copts.append(opts[2].button('Copyright'))
 
-    if copts[0]:
-        with modal.container():
-            notes2()
+    # if copts[0]:
+    #     with modal.container():
+    #         notes2()
 
-    if copts[1]:
-        with modal.container():
-            details()
+    # if copts[1]:
+    #     with modal.container():
+    #         details()
 
-    if copts[2]:
-        with modal.container():
-            copyright()
+    # if copts[2]:
+    #     with modal.container():
+    #         copyright()
 ###############
 
     depth = 0
@@ -658,11 +688,20 @@ def mainfunc(n):
     st.markdown(uandunusedcl)
 
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns([10,4])
     with col1:
+        if st.button('तपशील'):
+            details()
+    with col2:
         if st.button('उत्तर'):
             #with modal.container():
             reveal()
+
+
+    col1, col2 = st.columns([10,4])
+    with col1:
+        if st.button('Copyright'):
+            copyright()
     with col2:
         if st.button('नवी खेळी'):
             newplay()
@@ -691,9 +730,3 @@ def mainfunc(n):
 #with placeholder0.container():
 mainfunc(wlen)
 
-############################
-            # modal.open()
-            # if modal.is_open():
-            #     with modal.container():
-            # with col2:
-            #     st.write("Share")
