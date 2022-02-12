@@ -1,3 +1,11 @@
+# Ashish Mahabal
+# mahabal.ashish@gmail.com
+# 12 Feb 2022
+# V0.9
+
+# Contributions from
+# Abhijit Mahabal, Jay Mahabal, Anita Mahabal, Vidyullata (Anu) Mahabal
+# Beta testing: Chaitali Parashare, Rohit Gawande
 
 ### Imports
 
@@ -340,7 +348,7 @@ def details():
         स्वरक्रमात अ असल्यास तो म असू शकेल किंवा मं (किंवा क, कं, ... आणि व्यंजनसंख्या शून्य असल्यास अ किंवा अं)")
     whitetext("२. क्ष (= क् + ष) आणि ज्ञ (= ज् + ञ) ही जोडाक्षरे आहेत.")
     whitetext("३. विसर्ग (:), अर्ध-चंद्र ( ॅ), चंद्र-बिंदू ( ॅं), हलन्त (्) गुप्त शब्दांच्या यादीत अंतर्भूत नाहीत.")
-    whitetext("४. %s %s %s च्या सानिध्यात %s फसवा ठरू शकतो. उदाहरणार्थ: समजा गुप्त शब्द आहे कर्तव्य आणि तुमचा प्रयत्न आहे कातरी.\
+    whitetext("४. %s %s %s च्या सानिध्यात %s फसवा ठरू शकतो. उदाहरणार्थ: समजा गुप्तशब्द आहे कर्तव्य आणि तुमचा प्रयत्न आहे कातरी.\
          का आणि क अर्धवट जुळतात म्हणून का ला मिळतो  %s. त ला देखिल मिळतो %s \
         कारण तो र् + त् मधील त शी जुळतो. शेवटच्या री ला मात्र त्याच र्त मधील र ला जुळूनही %s मिळतो \
         कारण र्त ला आधीच एक गुण बहाल झाला आहे (%s)." % (imunicode['G'], imunicode['B'], imunicode['Y'], imunicode['R'],imunicode['B'], imunicode['B'], imunicode['R'], imunicode['B']))
