@@ -521,9 +521,12 @@ def copyright():
     #st.components.v1.html("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """,height=20,width=300)
     blacktext("*Copyright 2022* (All rights reserved.)")
     blacktext("Developed by Ashish Mahabal using Python + Streamlit (and pinch of CSS)")
+    blacktext("Code suggestions/help: [Jay, Abhijit] Mahabal")
+    blacktext("The code is research style - meaning it has many hidden features,\
+         and scope for future development e.g. providing synonyms and similar shaped words.")
     blacktext("Credits:")
     blacktext("Inspiration from Wordle. Wordnet's wordlist.")
-    blacktext("Alpha-testers: [Abhijit, Anita , Jay, Anu] Mahabal ")
+    blacktext("Alpha-testers: [Abhijit, Anita, Jay, Anu] Mahabal ")
     blacktext("Beta-testers: Chaitali Parashare, Rohit Gawande")
     blacktext("We do not collect any personal or location data.")
     blacktext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[twitter](https://twitter.com/aschig)")
