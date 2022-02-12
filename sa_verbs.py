@@ -20,7 +20,8 @@ def local_css(file_name):
 
 local_css("style.css")
 
-st.title('शब्दखुूळ (तिनाक्षरी)')
+#st.title('शब्दखुूळ (तिनाक्षरी)')
+st.image('shabdakhoool.png')
 #st.sidebar.title("Word Length")
 
 # toDisplay = st.sidebar.radio(
