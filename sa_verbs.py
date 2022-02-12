@@ -315,7 +315,11 @@ def todos():
     st.markdown("- ~~Counter changes when radio buttons clicked - avoid that~~")
 
 def blacktext(text):
-    mtext = "<font color=‘black’>%s</font>" % text
+    mtext = "<font color='black'>%s</font>" % text
+    st.markdown(mtext,unsafe_allow_html=True )
+
+def whitetext(text):
+    mtext = "<font color='white'>%s</font>" % text
     st.markdown(mtext,unsafe_allow_html=True )
 
 def colortext(text,color):
@@ -323,30 +327,30 @@ def colortext(text,color):
     st.markdown(mtext,unsafe_allow_html=True )
 
 def details():
-    #blacktext("*Details:*")
-    blacktext("जवळजवळ 4000 शब्दांच्या यादीतून एक शब्द विनाक्रम निवडला जातो. त्याचा घाट (स्वराकार आणि\
+    #whitetext("*Details:*")
+    whitetext("जवळजवळ 4000 शब्दांच्या यादीतून एक शब्द विनाक्रम निवडला जातो. त्याचा घाट (स्वराकार आणि\
         व्यंजनसंख्या) सांगितली जाते.")
-    blacktext("उदाहरणार्थ: 'बछडा'चा स्वराकार अअआ आणि व्यंजनसंख्या १११.")
-    blacktext("'अप्सरा'चे अअआ आणि ०२१.")
-    blacktext("शब्द शोधतांता कोणत्याही घाटाचे चालतात. अनेकदा मुद्दाम जोडाक्षरे वापरल्याने फायदा होतो (प्र, त्र वगैरे).")
-    blacktext("4-6 प्रयत्नांत उत्तर मिळू शकतं.")
-    blacktext("%s: अक्षर अचूक आहे (जागा, स्वर, आणि व्यंजन)." % imunicode['G'])
-    blacktext("%s: अक्षरातील निदान एक व्यंजन याच जागी योग्य आहे (सगळी व्यंजने बरोबर असल्यास फरक अनुस्वाराचा किंवा स्वराचा असू शकतो).\
+    whitetext("उदाहरणार्थ: 'बछडा'चा स्वराकार अअआ आणि व्यंजनसंख्या १११.")
+    whitetext("'अप्सरा'चे अअआ आणि ०२१.")
+    whitetext("शब्द शोधतांता कोणत्याही घाटाचे चालतात. अनेकदा मुद्दाम जोडाक्षरे वापरल्याने फायदा होतो (प्र, त्र वगैरे).")
+    whitetext("4-6 प्रयत्नांत उत्तर मिळू शकतं.")
+    whitetext("%s: अक्षर अचूक आहे (जागा, स्वर, आणि व्यंजन)." % imunicode['G'])
+    whitetext("%s: अक्षरातील निदान एक व्यंजन याच जागी योग्य आहे (सगळी व्यंजने बरोबर असल्यास फरक अनुस्वाराचा किंवा स्वराचा असू शकतो).\
          उदाहरणार्थ: 'का'च्या ऐवजी क्षे (=क्+षे) वापरल्यास, किंवा 'प'च्या जागी पु, इ ऐवजी ओ इत्यादि" %imunicode['B'])
-    blacktext("%s: अक्षरातील निदान एक व्यंजन इतर कोणत्यातरी जागी योग्य आहे." % imunicode['Y'])
-    blacktext("%s: या जागी वापरलेले अक्षर चुकले आहे." % imunicode['R'])
-    blacktext("%s %s %s %s या क्रमाने गुण दिले जातात, आणि एका स्थानाला एकच गुण मिळू शकतो." % (imunicode['G'], imunicode['B'], imunicode['Y'], imunicode['R']))
-    blacktext("काही टिपा:")
-    blacktext("१. अनुस्वार स्वरांमध्ये गणले जात नाहीत आणि व्यंजनांमध्येही नाही. \
+    whitetext("%s: अक्षरातील निदान एक व्यंजन इतर कोणत्यातरी जागी योग्य आहे." % imunicode['Y'])
+    whitetext("%s: या जागी वापरलेले अक्षर चुकले आहे." % imunicode['R'])
+    whitetext("%s %s %s %s या क्रमाने गुण दिले जातात, आणि एका स्थानाला एकच गुण मिळू शकतो." % (imunicode['G'], imunicode['B'], imunicode['Y'], imunicode['R']))
+    whitetext("काही टिपा:")
+    whitetext("१. अनुस्वार स्वरांमध्ये गणले जात नाहीत आणि व्यंजनांमध्येही नाही. \
         स्वरक्रमात अ असल्यास तो म असू शकेल किंवा मं (किंवा क, कं, ... आणि व्यंजनसंख्या शून्य असल्यास अ किंवा अं)")
-    blacktext("२. क्ष (= क् + ष) आणि ज्ञ (= ज् + ञ) ही जोडाक्षरे आहेत.")
-    blacktext("३. विसर्ग (:), अर्ध-चंद्र ( ॅ), चंद्र-बिंदू ( ॅं), हलन्त (्) गुप्त शब्दांच्या यादीत अंतर्भूत नाहीत.")
-    blacktext("४. %s %s %s च्या सानिध्यात %s फसवा ठरू शकतो. उदाहरणार्थ: समजा गुप्त शब्द आहे कर्तव्य आणि तुमचा प्रयत्न आहे कातरी.\
+    whitetext("२. क्ष (= क् + ष) आणि ज्ञ (= ज् + ञ) ही जोडाक्षरे आहेत.")
+    whitetext("३. विसर्ग (:), अर्ध-चंद्र ( ॅ), चंद्र-बिंदू ( ॅं), हलन्त (्) गुप्त शब्दांच्या यादीत अंतर्भूत नाहीत.")
+    whitetext("४. %s %s %s च्या सानिध्यात %s फसवा ठरू शकतो. उदाहरणार्थ: समजा गुप्त शब्द आहे कर्तव्य आणि तुमचा प्रयत्न आहे कातरी.\
          का आणि क अर्धवट जुळतात म्हणून का ला मिळतो  %s. त ला देखिल मिळतो %s \
         कारण तो र् + त् मधील त शी जुळतो. शेवटच्या री ला मात्र त्याच र्त मधील र ला जुळूनही %s मिळतो \
         कारण र्त ला आधीच एक गुण बहाल झाला आहे (%s)." % (imunicode['G'], imunicode['B'], imunicode['Y'], imunicode['R'],imunicode['B'], imunicode['B'], imunicode['R'], imunicode['B']))
     #      र् matching that in र्त because something has already matched the second position.")
-    #blacktext("When trying words, you do not have to stick to the given shape.\
+    #whitetext("When trying words, you do not have to stick to the given shape.\
         # In fact, it would often be advantageous to try additional consonants, and perhaps\
         # also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
         # (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
@@ -354,33 +358,33 @@ def details():
         # पर्याप्त is 8 with प् + अ + र् + य् + आ + प् + त् + अ). By giving the स्वराकार the requirement\
         # of guessing letters is reduced by 3.")
 
-    #blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
-    # blacktext("*Details:*")
-    # blacktext("The list of secret words is about 4000 long. A random one is\
+    #whitetext("Normally it should be possible to get to the answer in 4 to 6 steps.")
+    # whitetext("*Details:*")
+    # whitetext("The list of secret words is about 4000 long. A random one is\
     #     presented along with its shape: what vowels are in each letter, and\
     #     how many consonants are in each.")
-    # blacktext("Thus, if the word is बछडा, the स्वराकार is अअआ and the\
+    # whitetext("Thus, if the word is बछडा, the स्वराकार is अअआ and the\
     #     व्यंजनसंख्या is १११. अप्सरा has the same स्वराकार (अअआ) but the\
     #     व्यंजनसंख्या is ०२१.")
-    # blacktext("When trying words, you do not have to stick to the given shape.\
+    # whitetext("When trying words, you do not have to stick to the given shape.\
     #     In fact, it would often be advantageous to try additional consonants, and perhaps\
     #     also words with different स्वराकार. Since each letter has a vowel and between 0 and 3\
     #     (rarely 4) consonants, the seemly 3-letter words are equivalent to an English range\
     #     of about 5 to 8 (e.g. उखाणा expands to उ + ख् + आ + ण् + आ for a total of 5 while\
     #     पर्याप्त is 8 with प् + अ + र् + य् + आ + प् + त् + अ). By giving the स्वराकार the requirement\
     #     of guessing letters is reduced by 3.")
-    # blacktext("Another trick is to use more common consonants early, sometimes combined into\
+    # whitetext("Another trick is to use more common consonants early, sometimes combined into\
     #     common conjuncts like प्र and त्र.")
-    # blacktext("Normally it should be possible to get to the answer in 4 to 6 steps.")
+    # whitetext("Normally it should be possible to get to the answer in 4 to 6 steps.")
 
 def reveal():
-    t2put = colortext('%s' % st.session_state['secret'],'blue')
+    t2put = colortext('%s' % st.session_state['secret'],'white')
     st.components.v1.html(t2put,width=50,height=50)
-    #blacktext('`%s`' % st.session_state['secret'])
+    #whitetext('`%s`' % st.session_state['secret'])
     #st.markdown('`%s`' % st.session_state['secret'])
 
 def newplay():
-    st.markdown("placeholder.\nReload for now.")
+    st.markdown("Not yet implemented.\nReload for now.")
     # st.markdown("Another play")
     # del st.session_state['secret']
     # placeholder0.empty()
@@ -526,17 +530,17 @@ def explain(theScore):
 def copyright():
     #components.html("""<hr style="height:1px;border:none;color:#333;background-color:#333;" /> """)
     #st.components.v1.html("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """,height=20,width=300)
-    blacktext("*Copyright 2022* (All rights reserved.)")
-    blacktext("Developed by Ashish Mahabal using Python + Streamlit (and pinch of CSS)")
-    blacktext("Code suggestions/help: [Jay, Abhijit] Mahabal")
-    blacktext("The code is research style - meaning it has many hidden features,\
+    whitetext("*Copyright 2022* (All rights reserved.)")
+    whitetext("Developed by Ashish Mahabal using Python + Streamlit (and pinch of CSS)")
+    whitetext("Code suggestions/help: [Jay, Abhijit] Mahabal")
+    whitetext("The code is research style - meaning it has many hidden features,\
          and scope for future development e.g. providing synonyms and similar shaped words.")
-    blacktext("Credits:")
-    blacktext("Inspiration from Wordle. Wordnet's wordlist.")
-    blacktext("Alpha-testers: [Abhijit, Anita, Jay, Anu] Mahabal ")
-    blacktext("Beta-testers: Chaitali Parashare, Rohit Gawande")
-    blacktext("We do not collect any personal or location data.")
-    blacktext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[twitter](https://twitter.com/aschig)")
+    whitetext("Credits:")
+    whitetext("Inspiration from Wordle. Wordnet's wordlist.")
+    whitetext("Alpha-testers: [Abhijit, Anita, Jay, Anu] Mahabal ")
+    whitetext("Beta-testers: Chaitali Parashare, Rohit Gawande")
+    whitetext("We do not collect any personal or location data.")
+    whitetext("Contact: [email](mailto:mahabal.ashish@gmail.com)|[twitter](https://twitter.com/aschig)")
 
 # devnagari letter-set in unicode is assigned to the 0900-097F block (==2304-2431)
 # https://unicode.org/charts/PDF/U0900.pdf
